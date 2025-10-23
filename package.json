@@ -1,0 +1,88 @@
+{
+  "name": "@ldesign/git",
+  "version": "0.1.0",
+  "description": "LDesign Git 工具 - Git 操作、仓库管理、提交分析",
+  "keywords": [
+    "ldesign",
+    "git",
+    "repository",
+    "commit",
+    "version-control",
+    "automation"
+  ],
+  "author": "LDesign Team",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./cli": {
+      "types": "./dist/cli/index.d.ts",
+      "import": "./dist/cli/index.js",
+      "require": "./dist/cli/index.cjs"
+    },
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js",
+      "require": "./dist/core/index.cjs"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.js",
+      "require": "./dist/types/index.cjs"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "README.md",
+    "LICENSE",
+    "package.json",
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "type-check": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@ldesign/kit": "workspace:*",
+    "simple-git": "^3.22.0",
+    "chalk": "^5.3.0",
+    "ora": "^8.0.1",
+    "commander": "^12.0.0",
+    "inquirer": "^9.2.0",
+    "boxen": "^7.1.1",
+    "cli-table3": "^0.6.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.16",
+    "@types/inquirer": "^9.0.7",
+    "typescript": "^5.7.3",
+    "tsup": "^8.0.0",
+    "vitest": "^1.6.1",
+    "rimraf": "^5.0.5"
+  },
+  "bin": {
+    "ldesign-git": "./bin/cli.js"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
+
+
