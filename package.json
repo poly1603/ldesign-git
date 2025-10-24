@@ -1,7 +1,7 @@
 {
   "name": "@ldesign/git",
-  "version": "0.1.0",
-  "description": "LDesign Git 工具 - Git 操作、仓库管理、提交分析",
+  "version": "0.2.0",
+  "description": "LDesign Git 工具 - 功能强大的 Git 操作插件，提供完整的 Git 操作、高级自动化、工作流集成和丰富的统计分析",
   "keywords": [
     "ldesign",
     "git",
