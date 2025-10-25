@@ -11,7 +11,10 @@ export default defineConfig({
     'src/submodule/index.ts',
     'src/conflict/index.ts',
     'src/types/index.ts',
-    'src/utils/index.ts'
+    'src/utils/index.ts',
+    'src/errors/index.ts',
+    'src/logger/index.ts',
+    'src/cache/index.ts'
   ],
   format: ['esm', 'cjs'],
   dts: true,

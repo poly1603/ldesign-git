@@ -135,19 +135,23 @@ export class TagManager {
 
   /**
    * 获取所有标签的详细信息
+   * 
+   * @returns 标签信息数组
+   * 
+   * @example
+   * ```ts
+   * const allTags = await tagManager.getAllTagsInfo()
+   * ```
    */
   async getAllTagsInfo(): Promise<TagInfo[]> {
     const tagNames = await this.listTags()
-    const tagsInfo: TagInfo[] = []
 
-    for (const tagName of tagNames) {
-      const info = await this.getTagInfo(tagName)
-      if (info) {
-        tagsInfo.push(info)
-      }
-    }
+    // 并发获取所有标签信息（性能优化）
+    const tagsInfoPromises = tagNames.map(tagName => this.getTagInfo(tagName))
+    const tagsInfo = await Promise.all(tagsInfoPromises)
 
-    return tagsInfo
+    // 过滤掉 null 值
+    return tagsInfo.filter((info): info is TagInfo => info !== null)
   }
 
   /**

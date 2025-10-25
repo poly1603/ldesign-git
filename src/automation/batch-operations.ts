@@ -1,6 +1,7 @@
 import type {
   BatchOperationResult,
   BatchOperationSummary,
+  BatchOperationConfig,
   GitOptions
 } from '../types'
 import { BranchManager } from '../core/branch-manager'
@@ -9,6 +10,21 @@ import { MergeManager } from '../core/merge-manager'
 
 /**
  * 批量操作 - 批量处理分支、标签等操作
+ * 
+ * 提供批量执行 Git 操作的功能，支持并发执行和进度回调
+ * 
+ * @example
+ * ```ts
+ * const batch = new BatchOperations({ baseDir: './my-project' })
+ * 
+ * // 批量创建分支
+ * const result = await batch.createBranches([
+ *   'feature/feature-1',
+ *   'feature/feature-2'
+ * ])
+ * 
+ * console.log(`成功: ${result.succeeded}, 失败: ${result.failed}`)
+ * ```
  */
 export class BatchOperations {
   private branchManager: BranchManager
@@ -23,37 +39,33 @@ export class BatchOperations {
 
   /**
    * 批量创建分支
-   * @param branchNames 分支名数组
-   * @param startPoint 起始点（可选）
+   * 
+   * @param branchNames - 分支名数组
+   * @param startPoint - 起始点（可选）
+   * @param config - 批量操作配置
+   * @returns 批量操作摘要
+   * 
+   * @example
+   * ```ts
+   * const result = await batch.createBranches([
+   *   'feature/feature-1',
+   *   'feature/feature-2',
+   *   'feature/feature-3'
+   * ])
+   * ```
    */
   async createBranches(
     branchNames: string[],
-    startPoint?: string
+    startPoint?: string,
+    config: BatchOperationConfig = {}
   ): Promise<BatchOperationSummary> {
-    const results: BatchOperationResult[] = []
-
-    for (const branchName of branchNames) {
-      try {
+    return this.executeBatch(
+      branchNames,
+      async (branchName) => {
         await this.branchManager.createBranch(branchName, startPoint)
-        results.push({
-          success: true,
-          item: branchName
-        })
-      } catch (error: any) {
-        results.push({
-          success: false,
-          item: branchName,
-          error: error.message
-        })
-      }
-    }
-
-    return {
-      total: branchNames.length,
-      succeeded: results.filter(r => r.success).length,
-      failed: results.filter(r => !r.success).length,
-      results
-    }
+      },
+      config
+    )
   }
 
   /**
@@ -364,10 +376,163 @@ export class BatchOperations {
 
   /**
    * 清理陈旧的远程分支
-   * @param remote 远程名称
+   * 
+   * @param remote - 远程名称（默认为 'origin'）
+   * 
+   * @example
+   * ```ts
+   * await batch.cleanupStaleBranches('origin')
+   * ```
    */
   async cleanupStaleBranches(remote = 'origin'): Promise<void> {
     await this.branchManager.pruneRemoteBranches(remote)
+  }
+
+  /**
+   * 通用批量执行方法
+   * 
+   * @param items - 要处理的项数组
+   * @param operation - 对每个项执行的操作
+   * @param config - 批量操作配置
+   * @returns 批量操作摘要
+   * 
+   * @private
+   */
+  private async executeBatch<T>(
+    items: T[],
+    operation: (item: T) => Promise<void>,
+    config: BatchOperationConfig = {}
+  ): Promise<BatchOperationSummary> {
+    const {
+      concurrent = false,
+      concurrency = 5,
+      onProgress,
+      continueOnError = true
+    } = config
+
+    const results: BatchOperationResult[] = []
+    let completed = 0
+    let succeeded = 0
+    let failed = 0
+
+    if (concurrent) {
+      // 并发执行（使用并发限制）
+      const chunks = this.chunkArray(items, concurrency)
+
+      for (const chunk of chunks) {
+        const promises = chunk.map(async (item) => {
+          const itemStr = String(item)
+          try {
+            await operation(item)
+            completed++
+            succeeded++
+
+            if (onProgress) {
+              onProgress({
+                total: items.length,
+                completed,
+                succeeded,
+                failed,
+                current: itemStr
+              })
+            }
+
+            return {
+              success: true,
+              item: itemStr
+            }
+          } catch (error: any) {
+            completed++
+            failed++
+
+            if (onProgress) {
+              onProgress({
+                total: items.length,
+                completed,
+                succeeded,
+                failed,
+                current: itemStr
+              })
+            }
+
+            if (!continueOnError) {
+              throw error
+            }
+
+            return {
+              success: false,
+              item: itemStr,
+              error: error.message
+            }
+          }
+        })
+
+        const chunkResults = await Promise.all(promises)
+        results.push(...chunkResults)
+      }
+    } else {
+      // 串行执行
+      for (const item of items) {
+        const itemStr = String(item)
+        try {
+          await operation(item)
+          completed++
+          succeeded++
+
+          results.push({
+            success: true,
+            item: itemStr
+          })
+        } catch (error: any) {
+          completed++
+          failed++
+
+          results.push({
+            success: false,
+            item: itemStr,
+            error: error.message
+          })
+
+          if (!continueOnError) {
+            break
+          }
+        }
+
+        if (onProgress) {
+          onProgress({
+            total: items.length,
+            completed,
+            succeeded,
+            failed,
+            current: itemStr
+          })
+        }
+      }
+    }
+
+    return {
+      total: items.length,
+      succeeded,
+      failed,
+      results
+    }
+  }
+
+  /**
+   * 将数组分块
+   * 
+   * @param array - 要分块的数组
+   * @param chunkSize - 每块的大小
+   * @returns 分块后的数组
+   * 
+   * @private
+   */
+  private chunkArray<T>(array: T[], chunkSize: number): T[][] {
+    const chunks: T[][] = []
+    for (let i = 0; i < array.length; i += chunkSize) {
+      chunks.push(array.slice(i, i + chunkSize))
+    }
+    return chunks
   }
 }
 

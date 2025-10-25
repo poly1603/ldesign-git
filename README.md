@@ -37,6 +37,18 @@ LDesign Git 工具 - 功能强大的 Git 操作插件，提供完整的 Git 操�
 - 🎨 美化的输出（颜色、表格、进度条）
 - 🤝 交互式操作
 
+### 🆕 新增功能（v0.3.0）
+- 🔧 **配置管理器** - 完整的 Git 配置操作（local/global/system）
+- 📦 **Stash 管理器** - 强大的暂存区管理（save/pop/apply/list）
+- 🌐 **Remote 管理器** - 远程仓库完整操作（add/remove/fetch/prune）
+- 📊 **Diff 管理器** - 全面的差异比较（commits/branches/files）
+- 🌳 **Worktree 管理器** - 多工作树支持（add/remove/move/lock）
+- 📝 **Changelog 生成器** - 基于 Conventional Commits 的变更日志
+- 🚨 **统一错误处理** - 完整的错误类型系统和类型守卫
+- 📋 **日志系统** - 多级别日志支持和自定义输出
+- ⚡ **LRU 缓存** - 智能缓存机制，显著提升性能
+- 🔗 **依赖注入** - GitContext 统一管理共享资源
+
 ## 📦 安装
 
 ```bash
@@ -231,6 +243,186 @@ console.log(report)
 
 // 继续当前操作
 await resolver.continueCurrentOperation()
+```
+
+### 🆕 新增管理器（v0.3.0）
+
+#### Stash 管理器
+
+```typescript
+import { StashManager } from '@ldesign/git'
+
+const stashManager = new StashManager({ baseDir: './my-project' })
+
+// 保存当前更改
+await stashManager.save({ message: 'WIP: 临时保存', includeUntracked: true })
+
+// 列出所有 stash
+const stashes = await stashManager.list()
+
+// 应用最新的 stash
+await stashManager.apply()
+
+// 弹出并删除 stash
+await stashManager.pop()
+
+// 从 stash 创建分支
+await stashManager.branch('feature/from-stash', 0)
+```
+
+#### Remote 管理器
+
+```typescript
+import { RemoteManager } from '@ldesign/git'
+
+const remoteManager = new RemoteManager({ baseDir: './my-project' })
+
+// 添加远程仓库
+await remoteManager.add('origin', 'https://github.com/user/repo.git')
+
+// 列出所有远程
+const remotes = await remoteManager.list()
+
+// 设置 URL
+await remoteManager.setUrl('origin', 'https://github.com/user/new-repo.git')
+
+// Fetch 并清理
+await remoteManager.fetch('origin', { prune: true })
+await remoteManager.prune('origin')
+```
+
+#### Diff 管理器
+
+```typescript
+import { DiffManager } from '@ldesign/git'
+
+const diffManager = new DiffManager({ baseDir: './my-project' })
+
+// 比较两个提交
+const diff = await diffManager.diffCommits('HEAD~5', 'HEAD')
+console.log(`变更了 ${diff.files.length} 个文件`)
+
+// 比较分支
+const branchDiff = await diffManager.diffBranches('main', 'develop')
+console.log(`${branchDiff.commits.length} 个提交`)
+
+// 获取工作区变更
+const workingDiff = await diffManager.diffWorkingDirectory()
+
+// 查看文件 diff
+const fileDiff = await diffManager.showFileDiff('src/index.ts')
+```
+
+#### Git Config 管理器
+
+```typescript
+import { GitConfigManager } from '@ldesign/git'
+
+const configManager = new GitConfigManager({ baseDir: './my-project' })
+
+// 设置用户信息
+await configManager.setUserInfo('John Doe', 'john@example.com', 'global')
+
+// 获取配置
+const email = await configManager.get('user.email')
+
+// 列出所有配置
+const configs = await configManager.list('global')
+
+// 设置自定义配置
+await configManager.set('core.editor', 'code --wait', 'global')
+```
+
+#### Worktree 管理器
+
+```typescript
+import { WorktreeManager } from '@ldesign/git'
+
+const worktreeManager = new WorktreeManager({ baseDir: './my-project' })
+
+// 添加新工作树
+await worktreeManager.add('../my-project-feature', 'feature/new-feature')
+
+// 列出所有工作树
+const worktrees = await worktreeManager.list()
+
+// 锁定工作树
+await worktreeManager.lock('../my-project-feature', '正在进行重要工作')
+
+// 移除工作树
+await worktreeManager.remove('../my-project-feature')
+```
+
+#### Changelog 生成器
+
+```typescript
+import { ChangelogGenerator } from '@ldesign/git'
+
+const changelogGen = new ChangelogGenerator({ baseDir: './my-project' })
+
+// 生成特定版本的 changelog
+const changelog = await changelogGen.generateForVersion('1.1.0')
+console.log(changelog)
+
+// 更新 CHANGELOG.md
+await changelogGen.update('1.1.0')
+
+// 生成自定义范围的 changelog
+const customChangelog = await changelogGen.generate({
+  from: 'v1.0.0',
+  to: 'v1.1.0',
+  grouped: true,
+  outputFile: 'CHANGELOG.md'
+})
+```
+
+#### 错误处理和日志
+
+```typescript
+import { 
+  GitLogger, 
+  LogLevel,
+  GitBranchError,
+  isGitBranchError 
+} from '@ldesign/git'
+
+// 使用日志系统
+const logger = new GitLogger({ level: LogLevel.DEBUG })
+logger.info('操作开始')
+logger.error('操作失败', error)
+
+// 错误处理
+try {
+  await branchManager.deleteBranch('feature/test')
+} catch (error) {
+  if (isGitBranchError(error)) {
+    console.error(`分支操作失败: ${error.branch}`)
+    console.error(`错误代码: ${error.code}`)
+  }
+}
+```
+
+#### GitContext（依赖注入）
+
+```typescript
+import { GitContext, LogLevel } from '@ldesign/git'
+
+// 创建统一的上下文
+const context = new GitContext({
+  baseDir: './my-project',
+  logLevel: LogLevel.INFO,
+  enableCache: true,
+  cacheMaxSize: 200
+})
+
+// 获取共享资源
+const git = context.getGit()
+const logger = context.getLogger()
+const cache = context.getCache()
+
+// 查看统计信息
+const cacheStats = context.getCacheStats()
+console.log(`缓存命中率: ${(cacheStats.hitRate * 100).toFixed(2)}%`)
 ```
 
 ### 统计分析

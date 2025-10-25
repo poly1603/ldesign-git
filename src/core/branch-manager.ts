@@ -7,9 +7,24 @@ import type {
   CommitInfo,
   GitOptions
 } from '../types'
+import { GitBranchError, GitOperationError } from '../errors'
 
 /**
  * 分支管理器 - 管理 Git 分支
+ * 
+ * 提供完整的 Git 分支操作，包括创建、删除、重命名、比较、跟踪等
+ * 
+ * @example
+ * ```ts
+ * const branchManager = new BranchManager({ baseDir: './my-project' })
+ * 
+ * // 创建并切换到新分支
+ * await branchManager.createBranch('feature/new-feature')
+ * await branchManager.checkoutBranch('feature/new-feature')
+ * 
+ * // 列出所有分支
+ * const branches = await branchManager.listBranches()
+ * ```
  */
 export class BranchManager {
   private git: SimpleGit
@@ -20,84 +35,195 @@ export class BranchManager {
 
   /**
    * 获取所有分支信息
+   * 
+   * @returns 分支摘要信息，包含所有分支、当前分支等
+   * @throws {GitOperationError} 当获取分支列表失败时
+   * 
+   * @example
+   * ```ts
+   * const branches = await branchManager.listBranches()
+   * console.log(`总分支数: ${branches.all.length}`)
+   * console.log(`当前分支: ${branches.current}`)
+   * ```
    */
   async listBranches(): Promise<BranchSummary> {
-    const branchSummary = await this.git.branch()
+    try {
+      const branchSummary = await this.git.branch()
 
-    return {
-      all: branchSummary.all,
-      branches: branchSummary.branches as Record<string, BranchInfo>,
-      current: branchSummary.current,
-      detached: branchSummary.detached
+      return {
+        all: branchSummary.all,
+        branches: branchSummary.branches as Record<string, BranchInfo>,
+        current: branchSummary.current,
+        detached: branchSummary.detached
+      }
+    } catch (error) {
+      throw new GitOperationError('list branches', '获取分支列表失败', error as Error)
     }
   }
 
   /**
    * 获取当前分支名
+   * 
+   * @returns 当前分支名称
+   * @throws {GitOperationError} 当获取分支失败时
+   * 
+   * @example
+   * ```ts
+   * const current = await branchManager.getCurrentBranch()
+   * console.log(`当前在 ${current} 分支`)
+   * ```
    */
   async getCurrentBranch(): Promise<string> {
-    const branchSummary = await this.git.branch()
-    return branchSummary.current
+    try {
+      const branchSummary = await this.git.branch()
+      return branchSummary.current
+    } catch (error) {
+      throw new GitOperationError('get current branch', '获取当前分支失败', error as Error)
+    }
   }
 
   /**
    * 创建新分支
-   * @param branchName 分支名
-   * @param startPoint 起始点（可选，默认为当前 HEAD）
+   * 
+   * @param branchName - 分支名称
+   * @param startPoint - 起始点（可选，默认为当前 HEAD）
+   * @throws {GitBranchError} 当创建分支失败时
+   * 
+   * @example
+   * ```ts
+   * // 从当前位置创建分支
+   * await branchManager.createBranch('feature/new-feature')
+   * 
+   * // 从指定提交创建分支
+   * await branchManager.createBranch('hotfix/bug', 'abc123')
+   * ```
    */
   async createBranch(branchName: string, startPoint?: string): Promise<void> {
-    if (startPoint) {
-      await this.git.branch([branchName, startPoint])
-    } else {
-      await this.git.branch([branchName])
+    try {
+      if (startPoint) {
+        await this.git.branch([branchName, startPoint])
+      } else {
+        await this.git.branch([branchName])
+      }
+    } catch (error) {
+      throw new GitBranchError(
+        branchName,
+        'create',
+        '创建分支失败',
+        error as Error
+      )
     }
   }
 
   /**
    * 切换分支
-   * @param branchName 分支名
-   * @param options 切换选项
+   * 
+   * @param branchName - 分支名称
+   * @param options - 切换选项
+   * @param options.createBranch - 如果分支不存在则创建
+   * @param options.force - 强制切换（丢弃本地更改）
+   * @param options.track - 设置上游跟踪分支
+   * @throws {GitBranchError} 当切换分支失败时
+   * 
+   * @example
+   * ```ts
+   * // 切换到现有分支
+   * await branchManager.checkoutBranch('develop')
+   * 
+   * // 创建并切换到新分支
+   * await branchManager.checkoutBranch('feature/new', { createBranch: true })
+   * 
+   * // 跟踪远程分支
+   * await branchManager.checkoutBranch('feature/remote', {
+   *   track: 'origin/feature/remote'
+   * })
+   * ```
    */
   async checkoutBranch(branchName: string, options: CheckoutOptions = {}): Promise<void> {
-    const args: string[] = []
+    try {
+      const args: string[] = []
 
-    if (options.createBranch) {
-      args.push('-b')
+      if (options.createBranch) {
+        args.push('-b')
+      }
+
+      if (options.force) {
+        args.push('-f')
+      }
+
+      if (options.track) {
+        args.push('--track', options.track)
+      }
+
+      args.push(branchName)
+
+      await this.git.checkout(args)
+    } catch (error) {
+      throw new GitBranchError(
+        branchName,
+        'checkout',
+        '切换分支失败',
+        error as Error
+      )
     }
-
-    if (options.force) {
-      args.push('-f')
-    }
-
-    if (options.track) {
-      args.push('--track', options.track)
-    }
-
-    args.push(branchName)
-
-    await this.git.checkout(args)
   }
 
   /**
-   * 删除分支
-   * @param branchName 分支名
-   * @param force 是否强制删除（删除未合并的分支）
+   * 删除本地分支
+   * 
+   * @param branchName - 分支名称
+   * @param force - 是否强制删除（删除未合并的分支）
+   * @throws {GitBranchError} 当删除分支失败时
+   * 
+   * @example
+   * ```ts
+   * // 删除已合并的分支
+   * await branchManager.deleteBranch('feature/completed')
+   * 
+   * // 强制删除未合并的分支
+   * await branchManager.deleteBranch('feature/abandoned', true)
+   * ```
    */
   async deleteBranch(branchName: string, force = false): Promise<void> {
-    if (force) {
-      await this.git.branch(['-D', branchName])
-    } else {
-      await this.git.branch(['-d', branchName])
+    try {
+      if (force) {
+        await this.git.branch(['-D', branchName])
+      } else {
+        await this.git.branch(['-d', branchName])
+      }
+    } catch (error) {
+      throw new GitBranchError(
+        branchName,
+        'delete',
+        force ? '强制删除分支失败' : '删除分支失败（可能未合并）',
+        error as Error
+      )
     }
   }
 
   /**
    * 删除远程分支
-   * @param remote 远程名称
-   * @param branchName 分支名
+   * 
+   * @param remote - 远程名称
+   * @param branchName - 分支名称
+   * @throws {GitBranchError} 当删除远程分支失败时
+   * 
+   * @example
+   * ```ts
+   * await branchManager.deleteRemoteBranch('origin', 'feature/old-feature')
+   * ```
    */
   async deleteRemoteBranch(remote: string, branchName: string): Promise<void> {
-    await this.git.push(remote, branchName, ['--delete'])
+    try {
+      await this.git.push(remote, branchName, ['--delete'])
+    } catch (error) {
+      throw new GitBranchError(
+        branchName,
+        'delete remote',
+        `删除远程分支 ${remote}/${branchName} 失败`,
+        error as Error
+      )
+    }
   }
 
   /**

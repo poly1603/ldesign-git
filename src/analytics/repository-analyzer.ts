@@ -283,21 +283,31 @@ export class RepositoryAnalyzer {
 
   /**
    * 分析所有分支
+   * 
+   * @returns 分支分析数据数组
+   * 
+   * @example
+   * ```ts
+   * const branchesAnalytics = await analyzer.analyzeAllBranches()
+   * ```
    */
   async analyzeAllBranches(): Promise<BranchAnalytics[]> {
     const branches = await this.branchManager.listBranches()
-    const analytics: BranchAnalytics[] = []
 
-    for (const branchName of branches.all) {
+    // 并发分析所有分支（性能优化）
+    const analyticsPromises = branches.all.map(async (branchName) => {
       try {
-        const branchAnalytics = await this.analyzeBranch(branchName)
-        analytics.push(branchAnalytics)
+        return await this.analyzeBranch(branchName)
       } catch (error) {
         // 跳过错误的分支
+        return null
       }
-    }
+    })
 
-    return analytics
+    const analytics = await Promise.all(analyticsPromises)
+
+    // 过滤掉 null 值
+    return analytics.filter((item): item is BranchAnalytics => item !== null)
   }
 
   /**

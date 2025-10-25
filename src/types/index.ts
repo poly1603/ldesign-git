@@ -452,4 +452,300 @@ export interface CommitMessageValidation extends ValidationResult {
   }
 }
 
+// ==================== 新增类型定义 ====================
+
+/**
+ * 远程仓库信息
+ */
+export interface RemoteInfo {
+  /** 远程名称 */
+  name: string
+  /** 远程 URL */
+  url: string
+  /** 类型 */
+  type: 'fetch' | 'push'
+}
+
+/**
+ * 远程配置
+ */
+export interface RemoteConfig {
+  /** 远程名称 */
+  name: string
+  /** Fetch URL */
+  fetchUrl: string
+  /** Push URL */
+  pushUrl?: string
+}
+
+/**
+ * Diff 选项（扩展）
+ */
+export interface ExtendedDiffOptions extends DiffOptions {
+  /** 忽略空白符 */
+  ignoreWhitespace?: boolean
+  /** 单词级别的 diff */
+  wordDiff?: boolean
+  /** 颜色输出 */
+  color?: boolean
+  /** 上下文行数 */
+  context?: number
+}
+
+/**
+ * 文件 Diff 信息
+ */
+export interface FileDiff {
+  /** 文件路径 */
+  path: string
+  /** 变更类型 */
+  type: 'added' | 'modified' | 'deleted' | 'renamed'
+  /** 旧路径（重命名时） */
+  oldPath?: string
+  /** 新增行数 */
+  insertions: number
+  /** 删除行数 */
+  deletions: number
+  /** Diff 内容 */
+  diff?: string
+  /** 是否是二进制文件 */
+  binary?: boolean
+}
+
+/**
+ * 提交 Diff 信息
+ */
+export interface CommitDiff {
+  /** 起始提交 */
+  from: string
+  /** 结束提交 */
+  to: string
+  /** 文件变更列表 */
+  files: FileDiff[]
+  /** 总新增行数 */
+  totalInsertions: number
+  /** 总删除行数 */
+  totalDeletions: number
+}
+
+/**
+ * 分支 Diff 信息
+ */
+export interface BranchDiff extends CommitDiff {
+  /** 源分支 */
+  sourceBranch: string
+  /** 目标分支 */
+  targetBranch: string
+  /** 提交列表 */
+  commits: CommitInfo[]
+}
+
+/**
+ * Diff 统计信息
+ */
+export interface DiffStats {
+  /** 变更文件数 */
+  filesChanged: number
+  /** 新增行数 */
+  insertions: number
+  /** 删除行数 */
+  deletions: number
+  /** 文件统计 */
+  files: Array<{
+    path: string
+    insertions: number
+    deletions: number
+  }>
+}
+
+/**
+ * Worktree 信息
+ */
+export interface WorktreeInfo {
+  /** 工作树路径 */
+  path: string
+  /** 关联的分支 */
+  branch: string
+  /** 提交哈希 */
+  commit: string
+  /** 是否是主工作树 */
+  isPrimary: boolean
+  /** 是否是裸仓库 */
+  isBare: boolean
+  /** 是否被锁定 */
+  locked?: boolean
+}
+
+/**
+ * Worktree 选项
+ */
+export interface WorktreeOptions {
+  /** 是否强制 */
+  force?: boolean
+  /** 是否 detach */
+  detach?: boolean
+  /** 检出分支 */
+  checkout?: string
+}
+
+/**
+ * Changelog 选项
+ */
+export interface ChangelogOptions {
+  /** 起始版本/标签 */
+  from?: string
+  /** 结束版本/标签 */
+  to?: string
+  /** 是否包含未发布的变更 */
+  includeUnreleased?: boolean
+  /** 输出文件路径 */
+  outputFile?: string
+  /** 模板 */
+  template?: string
+  /** 是否分组 */
+  grouped?: boolean
+}
+
+/**
+ * Changelog 数据
+ */
+export interface ChangelogData {
+  /** 版本号 */
+  version: string
+  /** 发布日期 */
+  date: string
+  /** 变更列表 */
+  changes: {
+    /** 新功能 */
+    features: string[]
+    /** Bug 修复 */
+    fixes: string[]
+    /** 重大变更 */
+    breaking: string[]
+    /** 其他变更 */
+    others: string[]
+  }
+  /** 提交列表 */
+  commits?: CommitInfo[]
+}
+
+/**
+ * Config 作用域
+ */
+export type ConfigScope = 'local' | 'global' | 'system'
+
+/**
+ * Git 配置项
+ */
+export interface GitConfigItem {
+  /** 配置键 */
+  key: string
+  /** 配置值 */
+  value: string
+  /** 作用域 */
+  scope: ConfigScope
+}
+
+/**
+ * 用户信息
+ */
+export interface UserInfo {
+  /** 用户名 */
+  name: string
+  /** 邮箱 */
+  email: string
+}
+
+/**
+ * Reflog 条目
+ */
+export interface ReflogEntry {
+  /** 索引 */
+  index: number
+  /** 提交哈希 */
+  hash: string
+  /** 操作类型 */
+  operation: string
+  /** 消息 */
+  message: string
+  /** 日期 */
+  date: string
+}
+
+/**
+ * Bisect 状态
+ */
+export interface BisectStatus {
+  /** 是否正在进行 bisect */
+  isBisecting: boolean
+  /** 当前提交 */
+  current?: string
+  /** 好的提交 */
+  good?: string[]
+  /** 坏的提交 */
+  bad?: string
+  /** 剩余步骤 */
+  remaining?: number
+}
+
+/**
+ * 状态结果（完整类型）
+ */
+export interface StatusResult {
+  /** 当前分支 */
+  current: string
+  /** 跟踪的远程分支 */
+  tracking: string | null
+  /** 修改的文件 */
+  modified: string[]
+  /** 新增的文件 */
+  created: string[]
+  /** 删除的文件 */
+  deleted: string[]
+  /** 重命名的文件 */
+  renamed: Array<{ from: string; to: string }>
+  /** 暂存的文件 */
+  staged: string[]
+  /** 冲突的文件 */
+  conflicted: string[]
+  /** 未跟踪的文件 */
+  not_added: string[]
+  /** 领先远程的提交数 */
+  ahead: number
+  /** 落后远程的提交数 */
+  behind: number
+  /** 是否干净 */
+  isClean: boolean
+}
+
+/**
+ * 批量操作进度回调
+ */
+export interface BatchOperationProgress {
+  /** 总数 */
+  total: number
+  /** 已完成 */
+  completed: number
+  /** 成功数 */
+  succeeded: number
+  /** 失败数 */
+  failed: number
+  /** 当前项 */
+  current: string
+}
+
+/**
+ * 批量操作配置
+ */
+export interface BatchOperationConfig {
+  /** 是否并发执行 */
+  concurrent?: boolean
+  /** 并发数量 */
+  concurrency?: number
+  /** 进度回调 */
+  onProgress?: (progress: BatchOperationProgress) => void
+  /** 失败时是否继续 */
+  continueOnError?: boolean
+}
+
 
