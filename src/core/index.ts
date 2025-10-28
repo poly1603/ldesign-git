@@ -10,5 +10,8 @@ export { DiffManager } from './diff-manager'
 export { GitConfigManager } from './config-manager'
 export { WorktreeManager } from './worktree-manager'
 export { GitContext, createContext, defaultContext } from './git-context'
+export { PerformanceMonitor, createPerformanceMonitor } from './performance-monitor'
+export { LFSManager } from './lfs-manager'
+export { MonorepoManager } from './monorepo-manager'
 
 

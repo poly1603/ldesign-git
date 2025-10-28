@@ -37,7 +37,13 @@ LDesign Git 工具 - 功能强大的 Git 操作插件，提供完整的 Git 操�
 - 🎨 美化的输出（颜色、表格、进度条）
 - 🤝 交互式操作
 
-### 🆕 新增功能（v0.3.0）
+### 🆕 最新功能（v0.4.0）
+- ⚡ **性能监控器** - 实时追踪Git操作性能，识别瓶颈
+- 🔒 **LFS 管理器** - 完整的Git LFS支持（track/pull/push/prune）
+- 📦 **Monorepo 管理器** - 智能包检测、依赖分析、版本管理
+- 🕐 **Reflog 管理器** - 完整的reflog操作和历史追踪
+
+### v0.3.0 功能
 - 🔧 **配置管理器** - 完整的 Git 配置操作（local/global/system）
 - 📦 **Stash 管理器** - 强大的暂存区管理（save/pop/apply/list）
 - 🌐 **Remote 管理器** - 远程仓库完整操作（add/remove/fetch/prune）

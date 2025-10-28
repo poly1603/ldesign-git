@@ -15,6 +15,7 @@ export * from './hooks'
 export * from './submodule'
 export * from './conflict'
 export * from './analytics'
+export * from './advanced'
 
 // 错误处理
 export * from './errors'
