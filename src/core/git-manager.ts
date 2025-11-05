@@ -106,7 +106,11 @@ export class GitManager {
   async status(): Promise<StatusResult> {
     try {
       const result = await this.git.status()
-      return result as StatusResult
+      // 转换 simple-git 的 status 结果，将 isClean() 方法转换为 isClean 属性
+      return {
+        ...result,
+        isClean: result.isClean(),
+      } as StatusResult
     } catch (error) {
       throw new GitOperationError('status', '获取仓库状态失败', error as Error)
     }

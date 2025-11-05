@@ -2,21 +2,8 @@ import simpleGit, { SimpleGit } from 'simple-git'
 import type { GitOptions } from '../types'
 import { GitOperationError } from '../errors'
 
-/**
- * Bisect 状态
- */
-export interface BisectStatus {
-  /** 是否正在进行 bisect */
-  active: boolean
-  /** 当前提交 */
-  current?: string
-  /** 好的提交 */
-  good?: string[]
-  /** 坏的提交 */
-  bad?: string[]
-  /** 剩余步骤数 */
-  stepsRemaining?: number
-}
+// 从全局类型导入，避免重复定义
+import type { BisectStatus } from '../types'
 
 /**
  * Bisect 结果

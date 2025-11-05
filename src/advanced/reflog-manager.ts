@@ -2,25 +2,8 @@ import simpleGit, { SimpleGit } from 'simple-git'
 import type { GitOptions } from '../types'
 import { GitOperationError } from '../errors'
 
-/**
- * Reflog 条目
- */
-export interface ReflogEntry {
-  /** 哈希 */
-  hash: string
-  /** 引用名称 */
-  refName: string
-  /** 操作 */
-  action: string
-  /** 提交者 */
-  committer: string
-  /** 提交者邮箱 */
-  committerEmail: string
-  /** 时间戳 */
-  timestamp: Date
-  /** 消息 */
-  message: string
-}
+// 从全局类型导入，避免重复定义
+import type { ReflogEntry } from '../types'
 
 /**
  * Reflog 删除选项

@@ -31,7 +31,7 @@ export class RepositoryManager {
    */
   async hasUncommittedChanges(): Promise<boolean> {
     const status = await this.gitManager.status()
-    return !status.isClean()
+    return !status.isClean
   }
 }
 
