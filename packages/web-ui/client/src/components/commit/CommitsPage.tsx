@@ -1,0 +1,1 @@
+export { CommitsPage as default } from '../AllPages'

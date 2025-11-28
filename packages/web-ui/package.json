@@ -1,0 +1,49 @@
+{
+  "name": "@ldesign/git-web-ui",
+  "version": "0.4.0",
+  "description": "LDesign Git Web UI - 图形化界面",
+  "keywords": [
+    "git",
+    "web-ui",
+    "dashboard",
+    "visual"
+  ],
+  "author": "LDesign Team",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "ldesign-git-ui": "./bin/web-ui.js"
+  },
+  "files": [
+    "bin",
+    "client/dist",
+    "server/dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && npm run dev",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd server && npm run build",
+    "install:all": "cd client && npm install && cd ../server && npm install",
+    "clean": "rimraf client/dist server/dist",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@ldesign/git-core": "^0.4.0",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "ws": "^8.16.0",
+    "chokidar": "^3.6.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "rimraf": "^5.0.5"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

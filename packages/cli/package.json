@@ -1,0 +1,49 @@
+{
+  "name": "@ldesign/git-cli",
+  "version": "0.4.0",
+  "description": "LDesign Git CLI 工具 - 功能强大的命令行界面",
+  "keywords": [
+    "git",
+    "cli",
+    "command-line",
+    "tool"
+  ],
+  "author": "LDesign Team",
+  "license": "MIT",
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "ldesign-git": "./bin/cli.js"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "type-check": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@ldesign/git-core": "workspace:*",
+    "chalk": "^5.3.0",
+    "ora": "^8.0.1",
+    "commander": "^12.0.0",
+    "inquirer": "^9.2.0",
+    "boxen": "^7.1.1",
+    "cli-table3": "^0.6.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.16",
+    "@types/inquirer": "^9.0.7",
+    "typescript": "^5.7.3",
+    "tsup": "^8.0.0",
+    "rimraf": "^5.0.5"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

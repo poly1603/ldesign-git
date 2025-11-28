@@ -1,0 +1,1 @@
+export { ChangesPage as default } from '../AllPages'
