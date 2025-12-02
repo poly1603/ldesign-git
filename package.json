@@ -42,7 +42,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@ldesign/git-core": "^0.4.0",
+    "@ldesign/git-core": "workspace:*",
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "ws": "^8.16.0",
