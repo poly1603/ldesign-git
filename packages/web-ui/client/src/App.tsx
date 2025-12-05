@@ -1,12 +1,23 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useGitStore } from './store/gitStore'
-import Layout from './components/layout/Layout'
-import Dashboard from './components/dashboard/Dashboard'
-import BranchesPage from './components/branch/BranchesPage'
-import CommitsPage from './components/commit/CommitsPage'
-import ChangesPage from './components/changes/ChangesPage'
+import NewLayout from './components/layout/NewLayout'
+import NewDashboard from './components/dashboard/NewDashboard'
+import NewBranchesPage from './components/branch/NewBranchesPage'
+import NewCommitsPage from './components/commit/NewCommitsPage'
+import NewChangesPage from './components/changes/NewChangesPage'
 import SyncPage from './components/sync/SyncPage'
+import NewSubmodulesPage from './components/submodule/NewSubmodulesPage'
+import TagsPage from './components/tags/TagsPage'
+import StashPage from './components/stash/StashPage'
+import RemotesPage from './components/remotes/RemotesPage'
+import StatsPage from './components/stats/StatsPage'
+import HooksPage from './components/hooks/HooksPage'
+import ComparePage from './components/compare/ComparePage'
+import SettingsPage from './components/settings/SettingsPage'
+import CodeSearchPage from './components/search/CodeSearchPage'
+import FileBrowserPage from './components/browser/FileBrowserPage'
+import BranchGraphPage from './components/graph/BranchGraphPage'
 
 function App() {
   const { initWebSocket, cleanupWebSocket, fetchAll } = useGitStore()
@@ -24,13 +35,24 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout />}>
+        <Route path="/" element={<NewLayout />}>
           <Route index element={<Navigate to="/dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="branches" element={<BranchesPage />} />
-          <Route path="commits" element={<CommitsPage />} />
-          <Route path="changes" element={<ChangesPage />} />
+          <Route path="dashboard" element={<NewDashboard />} />
+          <Route path="branches" element={<NewBranchesPage />} />
+          <Route path="commits" element={<NewCommitsPage />} />
+          <Route path="changes" element={<NewChangesPage />} />
           <Route path="sync" element={<SyncPage />} />
+          <Route path="submodules" element={<NewSubmodulesPage />} />
+          <Route path="tags" element={<TagsPage />} />
+          <Route path="stash" element={<StashPage />} />
+          <Route path="remotes" element={<RemotesPage />} />
+          <Route path="stats" element={<StatsPage />} />
+          <Route path="hooks" element={<HooksPage />} />
+          <Route path="compare" element={<ComparePage />} />
+          <Route path="search" element={<CodeSearchPage />} />
+          <Route path="browser" element={<FileBrowserPage />} />
+          <Route path="graph" element={<BranchGraphPage />} />
+          <Route path="settings" element={<SettingsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

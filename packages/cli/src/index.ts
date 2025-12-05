@@ -15,6 +15,8 @@ import { createDiffCommand } from './commands/diff'
 import { createLogCommand } from './commands/log'
 import { createConfigCommand } from './commands/config'
 import { createRebaseCommand } from './commands/rebase'
+import { createSubmoduleCommand } from './commands/submodule'
+import { createUICommand } from './commands/ui'
 import * as display from './utils/display'
 
 const program = new Command()
@@ -121,6 +123,8 @@ program.addCommand(createAnalyzeCommand())
 program.addCommand(createReportCommand())
 program.addCommand(createConflictCommand())
 program.addCommand(createHooksCommand())
+program.addCommand(createSubmoduleCommand())
+program.addCommand(createUICommand())
 
 // 错误处理
 program.exitOverride()

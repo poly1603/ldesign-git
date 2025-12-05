@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express'
 import type { GitService } from '../services/git-service.js'
 import type { ApiResponse } from '../types/index.js'
+import { getAIService, setAIConfig } from '../services/ai-service.js'
 
 export function createApiRoutes(gitService: GitService): Router {
   const router = Router()
@@ -198,7 +199,7 @@ export function createApiRoutes(gitService: GitService): Router {
     handleResponse(res, () => gitService.getDiff(target as string))
   })
 
-  router.get('/diff/:file', (req, res) => {
+  router.get('/diff/:file(*)', (req, res) => {
     const { file } = req.params
     handleResponse(res, () => gitService.getFileDiff(file))
   })
@@ -302,6 +303,221 @@ export function createApiRoutes(gitService: GitService): Router {
 
   router.get('/monorepo/workspace', (req, res) => {
     handleResponse(res, () => gitService.analyzeWorkspace())
+  })
+
+  // ========== Submodule ==========
+  router.get('/submodules', (req, res) => {
+    handleResponse(res, () => gitService.getSubmodules())
+  })
+
+  router.post('/submodules', (req, res) => {
+    const { url, path, branch, force, depth } = req.body
+    handleResponse(res, () => gitService.addSubmodule(url, path, { branch, force, depth }), '子模块添加成功')
+  })
+
+  router.delete('/submodules/:path(*)', (req, res) => {
+    const { path } = req.params
+    handleResponse(res, () => gitService.removeSubmodule(path), '子模块删除成功')
+  })
+
+  router.post('/submodules/init', (req, res) => {
+    const { recursive } = req.body
+    handleResponse(res, () => gitService.initSubmodules(recursive), '子模块初始化成功')
+  })
+
+  router.post('/submodules/update', (req, res) => {
+    const { path, recursive, force } = req.body
+    if (path) {
+      handleResponse(res, () => gitService.updateSubmodule(path, { recursive, force }), '子模块更新成功')
+    } else {
+      handleResponse(res, () => gitService.updateSubmodules({ recursive, force }), '所有子模块更新成功')
+    }
+  })
+
+  router.post('/submodules/sync', (req, res) => {
+    handleResponse(res, () => gitService.syncSubmodules(), '子模块同步成功')
+  })
+
+  router.post('/submodules/pull', (req, res) => {
+    handleResponse(res, () => gitService.pullAllSubmodules(), '所有子模块拉取成功')
+  })
+
+  router.get('/submodules/summary', (req, res) => {
+    handleResponse(res, () => gitService.getSubmodulesSummary())
+  })
+
+  router.get('/submodules/changes', (req, res) => {
+    handleResponse(res, () => gitService.hasSubmoduleChanges())
+  })
+
+  router.post('/submodules/foreach', (req, res) => {
+    const { command } = req.body
+    handleResponse(res, () => gitService.foreachSubmodule(command))
+  })
+
+  router.post('/submodules/:path(*)/branch', (req, res) => {
+    const { path } = req.params
+    const { branch } = req.body
+    handleResponse(res, () => gitService.setSubmoduleBranch(path, branch), '子模块分支设置成功')
+  })
+
+  router.post('/submodules/update-latest', (req, res) => {
+    handleResponse(res, () => gitService.updateSubmodulesToLatest(), '子模块已更新到最新')
+  })
+
+  // ========== AI 功能 ==========
+  router.post('/ai/generate-commit-message', async (req, res) => {
+    const { diff, language } = req.body
+    const aiService = getAIService()
+    if (!aiService) {
+      res.status(500).json({ success: false, error: 'AI 服务未配置' })
+      return
+    }
+    handleResponse(res, () => aiService.generateCommitMessage({ diff, language }))
+  })
+
+  router.post('/ai/config', (req, res) => {
+    const { apiKey, baseUrl, model } = req.body
+    if (!apiKey) {
+      res.status(400).json({ success: false, error: 'API Key 是必需的' })
+      return
+    }
+    setAIConfig({ apiKey, baseUrl, model })
+    res.json({ success: true, message: 'AI 配置已更新' })
+  })
+
+  // ========== Git Blame ==========
+  router.get('/blame/:file(*)', (req, res) => {
+    const { file } = req.params
+    handleResponse(res, () => gitService.getBlame(file))
+  })
+
+  // ========== 分支比较 ==========
+  router.get('/compare/:base/:compare', (req, res) => {
+    const { base, compare } = req.params
+    handleResponse(res, () => gitService.compareBranches(base, compare))
+  })
+
+  // ========== Cherry-pick ==========
+  router.post('/cherry-pick', (req, res) => {
+    const { commits, noCommit } = req.body
+    handleResponse(res, () => gitService.cherryPick(commits, noCommit), 'Cherry-pick 成功')
+  })
+
+  router.post('/cherry-pick/abort', (req, res) => {
+    handleResponse(res, () => gitService.abortCherryPick(), 'Cherry-pick 已中止')
+  })
+
+  // ========== 仓库统计 ==========
+  router.get('/stats/contributors', (req, res) => {
+    handleResponse(res, () => gitService.getContributorStats())
+  })
+
+  router.get('/stats/activity', (req, res) => {
+    const days = parseInt(req.query.days as string) || 30
+    handleResponse(res, () => gitService.getCommitActivity(days))
+  })
+
+  router.get('/stats/file-types', (req, res) => {
+    handleResponse(res, () => gitService.getFileTypeStats())
+  })
+
+  // ========== Git Bisect ==========
+  router.post('/bisect/start', (req, res) => {
+    const { bad, good } = req.body
+    handleResponse(res, () => gitService.bisectStart(bad, good))
+  })
+
+  router.post('/bisect/good', (req, res) => {
+    handleResponse(res, () => gitService.bisectGood())
+  })
+
+  router.post('/bisect/bad', (req, res) => {
+    handleResponse(res, () => gitService.bisectBad())
+  })
+
+  router.post('/bisect/reset', (req, res) => {
+    handleResponse(res, () => gitService.bisectReset())
+  })
+
+  // ========== Git Hooks ==========
+  router.get('/hooks', (req, res) => {
+    handleResponse(res, () => gitService.getHooks())
+  })
+
+  router.post('/hooks/:name', (req, res) => {
+    const { name } = req.params
+    const { content, enabled } = req.body
+    handleResponse(res, () => gitService.saveHook(name, content, enabled), 'Hook 已保存')
+  })
+
+  // ========== 搜索提交 ==========
+  router.get('/commits/search', (req, res) => {
+    const { q, author, since, until, path, limit } = req.query
+    handleResponse(res, () => gitService.searchCommits(q as string || '', {
+      author: author as string,
+      since: since as string,
+      until: until as string,
+      path: path as string,
+      limit: limit ? parseInt(limit as string) : undefined
+    }))
+  })
+
+  // ========== 文件历史 ==========
+  router.get('/files/:file(*)/history', (req, res) => {
+    const { file } = req.params
+    const limit = parseInt(req.query.limit as string) || 50
+    handleResponse(res, () => gitService.getFileHistory(file, limit))
+  })
+
+  // ========== 冲突解决 ==========
+  router.get('/conflicts/:file(*)/content', (req, res) => {
+    const { file } = req.params
+    handleResponse(res, () => gitService.getConflictContent(file))
+  })
+
+  router.post('/conflicts/:file(*)/save', (req, res) => {
+    const { file } = req.params
+    const { content } = req.body
+    handleResponse(res, () => gitService.saveConflictResolution(file, content), '冲突已解决')
+  })
+
+  // ========== 提交详情 ==========
+  router.get('/commits/:hash/details', (req, res) => {
+    const { hash } = req.params
+    handleResponse(res, () => gitService.getCommitDetails(hash))
+  })
+
+  // ========== 分支图 ==========
+  router.get('/graph', (req, res) => {
+    const limit = parseInt(req.query.limit as string) || 100
+    handleResponse(res, () => gitService.getBranchGraph(limit))
+  })
+
+  // ========== 代码搜索 ==========
+  router.get('/search/code', (req, res) => {
+    const { q, pattern, caseSensitive, regex } = req.query
+    handleResponse(res, () => gitService.searchCode(q as string || '', {
+      filePattern: pattern as string,
+      caseSensitive: caseSensitive === 'true',
+      regex: regex === 'true'
+    }))
+  })
+
+  // ========== 文件浏览 ==========
+  router.get('/browse', (req, res) => {
+    const { path, ref } = req.query
+    handleResponse(res, () => gitService.listFiles(path as string || '', ref as string || 'HEAD'))
+  })
+
+  router.get('/browse/content', (req, res) => {
+    const { path, ref } = req.query
+    handleResponse(res, () => gitService.getFileContent(path as string || '', ref as string || 'HEAD'))
+  })
+
+  // ========== 仓库信息 ==========
+  router.get('/repo/info', (req, res) => {
+    handleResponse(res, () => gitService.getRepoInfo())
   })
 
   return router

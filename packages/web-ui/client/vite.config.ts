@@ -10,12 +10,12 @@ export default defineConfig({
     open: true, // 自动打开浏览器
     proxy: {
       '/api': {
-        target: 'http://localhost:3001',
+        target: 'http://localhost:19899',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '/api')
       },
       '/ws': {
-        target: 'ws://localhost:3001',
+        target: 'ws://localhost:19899',
         ws: true,
         changeOrigin: true
       }

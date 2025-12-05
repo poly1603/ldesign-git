@@ -270,6 +270,282 @@ export class GitManager {
       )
     }
   }
+
+  /**
+   * 重置仓库状态
+   * 
+   * @param mode - 重置模式: 'soft' | 'mixed' | 'hard'
+   * @param commit - 目标提交（默认为 'HEAD'）
+   * @throws {GitOperationError} 当重置失败时
+   * 
+   * @example
+   * ```ts
+   * // 软重置到上一个提交
+   * await git.reset('soft', 'HEAD~1')
+   * 
+   * // 硬重置到指定提交
+   * await git.reset('hard', 'abc1234')
+   * ```
+   */
+  async reset(mode: 'soft' | 'mixed' | 'hard' = 'mixed', commit = 'HEAD'): Promise<void> {
+    try {
+      await this.git.reset([`--${mode}`, commit])
+    } catch (error) {
+      throw new GitOperationError(
+        'reset',
+        `重置到 ${commit} 失败`,
+        error as Error,
+        { mode, commit }
+      )
+    }
+  }
+
+  /**
+   * 回退指定提交
+   * 
+   * @param commit - 要回退的提交哈希
+   * @throws {GitOperationError} 当回退失败时
+   * 
+   * @example
+   * ```ts
+   * await git.revert('abc1234')
+   * ```
+   */
+  async revert(commit: string): Promise<void> {
+    try {
+      await this.git.revert(commit)
+    } catch (error) {
+      throw new GitOperationError(
+        'revert',
+        `回退提交 ${commit} 失败`,
+        error as Error,
+        { commit }
+      )
+    }
+  }
+
+  /**
+   * 克隆仓库
+   * 
+   * @param url - 仓库 URL
+   * @param localPath - 本地路径
+   * @param options - 克隆选项
+   * @throws {GitNetworkError} 当克隆失败时
+   * 
+   * @example
+   * ```ts
+   * await git.clone('https://github.com/user/repo.git', './my-repo')
+   * ```
+   */
+  async clone(url: string, localPath: string, options?: { depth?: number; branch?: string; recursive?: boolean }): Promise<void> {
+    try {
+      const args: string[] = []
+      
+      if (options?.depth) {
+        args.push('--depth', options.depth.toString())
+      }
+      if (options?.branch) {
+        args.push('--branch', options.branch)
+      }
+      if (options?.recursive) {
+        args.push('--recurse-submodules')
+      }
+      
+      await this.git.clone(url, localPath, args)
+    } catch (error) {
+      throw new GitNetworkError(
+        url,
+        'clone',
+        `克隆仓库 ${url} 失败`,
+        error as Error
+      )
+    }
+  }
+
+  /**
+   * 检出分支或文件
+   * 
+   * @param target - 分支名或文件路径
+   * @param options - 检出选项
+   * @throws {GitOperationError} 当检出失败时
+   * 
+   * @example
+   * ```ts
+   * // 切换分支
+   * await git.checkout('develop')
+   * 
+   * // 创建并切换分支
+   * await git.checkout('feature/new', { createBranch: true })
+   * 
+   * // 丢弃文件更改
+   * await git.checkout('src/index.ts')
+   * ```
+   */
+  async checkout(target: string, options?: { createBranch?: boolean }): Promise<void> {
+    try {
+      if (options?.createBranch) {
+        await this.git.checkoutBranch(target, 'HEAD')
+      } else {
+        await this.git.checkout(target)
+      }
+    } catch (error) {
+      throw new GitOperationError(
+        'checkout',
+        `检出 ${target} 失败`,
+        error as Error,
+        { target, options }
+      )
+    }
+  }
+
+  /**
+   * 清理未跟踪的文件
+   * 
+   * @param options - 清理选项
+   * @throws {GitOperationError} 当清理失败时
+   * 
+   * @example
+   * ```ts
+   * // 清理未跟踪文件
+   * await git.clean({ force: true })
+   * 
+   * // 清理未跟踪文件和目录
+   * await git.clean({ force: true, directories: true })
+   * ```
+   */
+  async clean(options?: { force?: boolean; directories?: boolean; dryRun?: boolean }): Promise<void> {
+    try {
+      const args: string[] = []
+      
+      if (options?.force) {
+        args.push('-f')
+      }
+      if (options?.directories) {
+        args.push('-d')
+      }
+      if (options?.dryRun) {
+        args.push('-n')
+      }
+      
+      await this.git.clean(args)
+    } catch (error) {
+      throw new GitOperationError(
+        'clean',
+        '清理工作区失败',
+        error as Error,
+        { options }
+      )
+    }
+  }
+
+  /**
+   * 从暂存区移除文件
+   * 
+   * @param files - 要移除的文件路径或路径数组
+   * @throws {GitOperationError} 当移除失败时
+   * 
+   * @example
+   * ```ts
+   * await git.unstage('src/index.ts')
+   * await git.unstage(['file1.ts', 'file2.ts'])
+   * ```
+   */
+  async unstage(files: string | string[]): Promise<void> {
+    try {
+      const fileList = Array.isArray(files) ? files : [files]
+      await this.git.reset(['HEAD', '--', ...fileList])
+    } catch (error) {
+      throw new GitOperationError(
+        'unstage',
+        '从暂存区移除文件失败',
+        error as Error,
+        { files }
+      )
+    }
+  }
+
+  /**
+   * 删除文件
+   * 
+   * @param files - 要删除的文件路径或路径数组
+   * @param options - 删除选项
+   * @throws {GitOperationError} 当删除失败时
+   * 
+   * @example
+   * ```ts
+   * await git.rm('old-file.ts')
+   * await git.rm(['file1.ts', 'file2.ts'], { cached: true })
+   * ```
+   */
+  async rm(files: string | string[], options?: { cached?: boolean; force?: boolean }): Promise<void> {
+    try {
+      const fileList = Array.isArray(files) ? files : [files]
+      const args: string[] = []
+      
+      if (options?.cached) {
+        args.push('--cached')
+      }
+      if (options?.force) {
+        args.push('-f')
+      }
+      
+      await this.git.rm([...args, ...fileList])
+    } catch (error) {
+      throw new GitOperationError(
+        'rm',
+        '删除文件失败',
+        error as Error,
+        { files, options }
+      )
+    }
+  }
+
+  /**
+   * 获取提交日志
+   * 
+   * @param options - 日志选项
+   * @returns 提交日志列表
+   * @throws {GitOperationError} 当获取日志失败时
+   * 
+   * @example
+   * ```ts
+   * const logs = await git.log({ maxCount: 10 })
+   * logs.all.forEach(commit => console.log(commit.message))
+   * ```
+   */
+  async log(options?: { maxCount?: number; from?: string; to?: string }): Promise<any> {
+    try {
+      const logOptions: any = {}
+      
+      if (options?.maxCount) {
+        logOptions.maxCount = options.maxCount
+      }
+      if (options?.from) {
+        logOptions.from = options.from
+      }
+      if (options?.to) {
+        logOptions.to = options.to
+      }
+      
+      return await this.git.log(logOptions)
+    } catch (error) {
+      throw new GitOperationError(
+        'log',
+        '获取提交日志失败',
+        error as Error,
+        { options }
+      )
+    }
+  }
+
+  /**
+   * 获取原始 SimpleGit 实例（用于高级操作）
+   * 
+   * @returns SimpleGit 实例
+   */
+  getRawGit(): SimpleGit {
+    return this.git
+  }
 }
 
 

@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from 'react-router-dom'
-import { GitBranch, GitCommit, FileText, RefreshCw, Home, AlertCircle } from 'lucide-react'
+import { GitBranch, GitCommit, FileText, RefreshCw, Home, AlertCircle, FolderGit2 } from 'lucide-react'
 import { useGitStore } from '../../store/gitStore'
 
 export default function Layout() {
@@ -12,6 +12,7 @@ export default function Layout() {
     { path: '/commits', icon: GitCommit, label: '提交历史' },
     { path: '/changes', icon: FileText, label: '变更' },
     { path: '/sync', icon: RefreshCw, label: '同步' },
+    { path: '/submodules', icon: FolderGit2, label: '子模块' },
   ]
 
   return (

@@ -19,7 +19,7 @@ try {
   // 这里不做任何事，保持空字符串，后面用 process.cwd() 替代
 }
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 19899
 const GIT_REPO_PATH = process.env.GIT_REPO_PATH || process.cwd()
 
 async function startServer() {

@@ -1,12 +1,25 @@
 {
   "name": "@ldesign/git-tools",
-  "version": "0.4.0",
-  "description": "LDesign Git Tools - 完整的 Git 工具集（包含 Core、CLI 和 Web UI）",
+  "version": "0.5.0",
+  "description": "LDesign Git Tools - 功能强大的 Git 命令行工具和可视化界面，支持子模块管理",
   "author": "LDesign Team",
   "license": "MIT",
   "type": "module",
+  "keywords": [
+    "git",
+    "cli",
+    "submodule",
+    "web-ui",
+    "version-control",
+    "developer-tools"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nicepkg/ldesign-git.git"
+  },
   "bin": {
-    "ldesign-git-ui": "./bin/ldesign-git-ui.js"
+    "lgit": "./bin/lgit.js",
+    "ldesign-git": "./bin/lgit.js"
   },
   "files": [
     "bin",
@@ -30,23 +43,15 @@
     "dev:cli": "pnpm --filter @ldesign/git-cli dev",
     "dev:web-ui": "pnpm --filter @ldesign/git-web-ui dev",
     "dev:docs": "pnpm --filter @ldesign/git-docs dev",
-    "start:ui": "node bin/ldesign-git-ui.js",
+    "start": "node bin/lgit.js",
+    "start:ui": "node bin/lgit.js ui",
     "test": "pnpm -r test",
     "test:core": "pnpm --filter @ldesign/git-core test",
-    "clean": "pnpm -r exec rimraf dist",
+    "clean": "rimraf dist && pnpm -r exec rimraf dist",
     "type-check": "pnpm -r type-check",
     "lint": "eslint packages/*/src --ext .ts,.tsx",
     "lint:fix": "eslint packages/*/src --ext .ts,.tsx --fix",
-    "install:all": "pnpm install && pnpm --filter @ldesign/git-web-ui install:all",
-    "publish:all": "pnpm -r --filter \"./packages/**\" publish --access public",
     "prepublishOnly": "npm run build"
-  },
-  "dependencies": {
-    "@ldesign/git-core": "workspace:*",
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "ws": "^8.16.0",
-    "chokidar": "^3.6.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.20.0",
@@ -57,7 +62,6 @@
     "typescript": "^5.7.3"
   },
   "engines": {
-    "node": ">=16.0.0",
-    "pnpm": ">=8.0.0"
+    "node": ">=18.0.0"
   }
 }
