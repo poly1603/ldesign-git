@@ -41,6 +41,10 @@ export default function ComparePage() {
     }
   }
 
+  // 分离本地分支和远程分支
+  const localBranches = branches.filter(b => !b.name.startsWith('remotes/'))
+  const remoteBranches = branches.filter(b => b.name.startsWith('remotes/'))
+
   const BranchSelector = ({ 
     value, 
     onChange, 
@@ -57,34 +61,61 @@ export default function ComparePage() {
     <div className="relative">
       <button
         onClick={() => setShow(!show)}
-        className="flex items-center space-x-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white min-w-[200px]"
+        className="flex items-center space-x-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg text-gray-900 dark:text-white min-w-[200px]"
       >
         <GitBranch className="w-4 h-4 text-gray-400" />
         <span className="flex-1 text-left truncate">{value || label}</span>
         <ChevronDown className="w-4 h-4 text-gray-400" />
       </button>
       {show && (
-        <div className="absolute top-full left-0 mt-1 w-full max-h-64 overflow-auto bg-gray-800 rounded-lg shadow-xl z-10 border border-gray-700">
-          {branches.map(b => (
-            <button
-              key={b.name}
-              onClick={() => { onChange(b.name); setShow(false) }}
-              className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-700 ${
-                b.name === value ? 'bg-gray-700 text-blue-400' : 'text-white'
-              }`}
-            >
-              {b.name} {b.current && <span className="text-green-400">(当前)</span>}
-            </button>
-          ))}
+        <div className="absolute top-full left-0 mt-1 w-full max-h-80 overflow-auto bg-white dark:bg-gray-800 rounded-lg shadow-xl z-10 border border-gray-200 dark:border-gray-700">
+          {/* 本地分支 */}
+          {localBranches.length > 0 && (
+            <>
+              <div className="px-3 py-1.5 text-xs text-gray-500 font-medium bg-gray-100 dark:bg-gray-900 sticky top-0">
+                本地分支
+              </div>
+              {localBranches.map(b => (
+                <button
+                  key={b.name}
+                  onClick={() => { onChange(b.name); setShow(false) }}
+                  className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                    b.name === value ? 'bg-gray-100 dark:bg-gray-700 text-primary' : 'text-gray-900 dark:text-white'
+                  }`}
+                >
+                  {b.name} {b.current && <span className="text-green-400">(当前)</span>}
+                </button>
+              ))}
+            </>
+          )}
+          {/* 远程分支 */}
+          {remoteBranches.length > 0 && (
+            <>
+              <div className="px-3 py-1.5 text-xs text-gray-500 font-medium bg-gray-100 dark:bg-gray-900 sticky top-0">
+                远程分支
+              </div>
+              {remoteBranches.map(b => (
+                <button
+                  key={b.name}
+                  onClick={() => { onChange(b.name); setShow(false) }}
+                  className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                    b.name === value ? 'bg-gray-100 dark:bg-gray-700 text-primary' : 'text-gray-900 dark:text-white'
+                  }`}
+                >
+                  {b.name.replace('remotes/', '')}
+                </button>
+              ))}
+            </>
+          )}
         </div>
       )}
     </div>
   )
 
   return (
-    <div className="h-full flex flex-col bg-gray-900">
+    <div className="h-full flex flex-col bg-gray-50 dark:bg-gray-900">
       {/* 顶部选择器 */}
-      <div className="flex-shrink-0 p-4 border-b border-gray-700 bg-gray-800">
+      <div className="flex-shrink-0 p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
         <div className="flex items-center space-x-4">
           <BranchSelector
             value={baseBranch}
@@ -104,7 +135,7 @@ export default function ComparePage() {
           <button
             onClick={handleCompare}
             disabled={!baseBranch || !compareBranch || baseBranch === compareBranch || loading}
-            className="flex items-center space-x-2 px-6 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg"
+            className="flex items-center space-x-2 px-6 py-2 bg-primary hover:bg-primary-hover disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg"
           >
             {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <GitBranch className="w-4 h-4" />}
             <span>比较</span>
@@ -117,7 +148,7 @@ export default function ComparePage() {
         {compareResult ? (
           <div className="h-full flex flex-col">
             {/* 统计信息 */}
-            <div className="flex-shrink-0 p-4 border-b border-gray-700 bg-gray-850">
+            <div className="flex-shrink-0 p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-850">
               <div className="flex items-center space-x-6">
                 <div className="flex items-center space-x-2">
                   <span className="text-green-400">{compareResult.ahead}</span>
@@ -129,7 +160,7 @@ export default function ComparePage() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <GitCommit className="w-4 h-4 text-gray-400" />
-                  <span className="text-white">{compareResult.commits?.length || 0} 个提交差异</span>
+                  <span className="text-gray-900 dark:text-white">{compareResult.commits?.length || 0} 个提交差异</span>
                 </div>
               </div>
             </div>
@@ -137,14 +168,14 @@ export default function ComparePage() {
             {/* 提交列表和差异 */}
             <div className="flex-1 flex overflow-hidden">
               {/* 提交列表 */}
-              <div className="w-80 border-r border-gray-700 overflow-auto">
-                <div className="p-3 border-b border-gray-700 bg-gray-800">
-                  <h3 className="text-sm font-medium text-white">提交列表</h3>
+              <div className="w-80 border-r border-gray-200 dark:border-gray-700 overflow-auto bg-white dark:bg-transparent">
+                <div className="p-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">提交列表</h3>
                 </div>
                 {compareResult.commits?.map((c: any, i: number) => (
-                  <div key={i} className="px-4 py-2 border-b border-gray-800 hover:bg-gray-800">
-                    <code className="text-xs text-blue-400">{c.hash}</code>
-                    <p className="text-sm text-white truncate mt-1">{c.message}</p>
+                  <div key={i} className="px-4 py-2 border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <code className="text-xs text-blue-500 dark:text-blue-400">{c.hash}</code>
+                    <p className="text-sm text-gray-900 dark:text-white truncate mt-1">{c.message}</p>
                   </div>
                 ))}
                 {(!compareResult.commits || compareResult.commits.length === 0) && (

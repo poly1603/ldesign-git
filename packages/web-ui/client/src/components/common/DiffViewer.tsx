@@ -121,7 +121,7 @@ export default function DiffViewer({ diff, fileName }: DiffViewerProps) {
     setExpandedFiles(newExpanded)
   }
 
-  if (!diff || files.length === 0) {
+  if (!diff) {
     return (
       <div className="flex items-center justify-center h-full text-gray-500">
         <p>选择文件查看差异</p>
@@ -129,13 +129,18 @@ export default function DiffViewer({ diff, fileName }: DiffViewerProps) {
     )
   }
 
+  // 如果解析失败但有 diff 内容，使用简化视图
+  if (files.length === 0 && diff.trim()) {
+    return <SimpleDiffViewer diff={diff} />
+  }
+
   return (
     <div className="h-full overflow-auto">
       {files.map((file, idx) => (
-        <div key={idx} className="border-b border-gray-700">
+        <div key={idx} className="border-b border-gray-200 dark:border-gray-700">
           {/* File Header */}
           <div
-            className="flex items-center px-4 py-2 bg-gray-800 hover:bg-gray-750 cursor-pointer sticky top-0 z-10"
+            className="flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-750 cursor-pointer sticky top-0 z-10"
             onClick={() => toggleFile(file.fileName)}
           >
             {expandedFiles.has(file.fileName) ? (
@@ -144,7 +149,7 @@ export default function DiffViewer({ diff, fileName }: DiffViewerProps) {
               <ChevronRight className="w-4 h-4 text-gray-400 mr-2" />
             )}
             <File className="w-4 h-4 text-gray-400 mr-2" />
-            <span className="text-sm text-white font-mono flex-1">{file.fileName}</span>
+            <span className="text-sm text-gray-900 dark:text-white font-mono flex-1">{file.fileName}</span>
             <div className="flex items-center space-x-3 text-xs">
               {file.additions > 0 && (
                 <span className="flex items-center text-green-400">
@@ -176,11 +181,11 @@ export default function DiffViewer({ diff, fileName }: DiffViewerProps) {
 
           {/* File Content */}
           {expandedFiles.has(file.fileName) && (
-            <div className="bg-gray-950">
+            <div className="bg-gray-50 dark:bg-gray-950">
               {file.chunks.map((chunk, chunkIdx) => (
                 <div key={chunkIdx}>
                   {/* Chunk Header */}
-                  <div className="flex bg-blue-900/30 text-blue-300 text-xs font-mono px-4 py-1">
+                  <div className="flex bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-mono px-4 py-1">
                     <span className="w-20 text-right pr-2 text-gray-500">...</span>
                     <span className="w-20 text-right pr-2 text-gray-500">...</span>
                     <span className="flex-1 pl-2">{chunk.header}</span>
@@ -191,38 +196,38 @@ export default function DiffViewer({ diff, fileName }: DiffViewerProps) {
                     <div
                       key={lineIdx}
                       className={`flex text-xs font-mono ${
-                        line.type === 'add' ? 'bg-green-900/20' :
-                        line.type === 'del' ? 'bg-red-900/20' : ''
+                        line.type === 'add' ? 'bg-green-100 dark:bg-green-900/20' :
+                        line.type === 'del' ? 'bg-red-100 dark:bg-red-900/20' : ''
                       }`}
                     >
                       {/* Old line number */}
-                      <span className={`w-20 text-right pr-2 py-0.5 select-none border-r border-gray-800 ${
-                        line.type === 'add' ? 'bg-green-900/30 text-gray-600' :
-                        line.type === 'del' ? 'bg-red-900/30 text-red-400/50' :
-                        'text-gray-600'
+                      <span className={`w-20 text-right pr-2 py-0.5 select-none border-r border-gray-200 dark:border-gray-800 ${
+                        line.type === 'add' ? 'bg-green-200 dark:bg-green-900/30 text-gray-500' :
+                        line.type === 'del' ? 'bg-red-200 dark:bg-red-900/30 text-red-400/50' :
+                        'text-gray-500'
                       }`}>
                         {line.type !== 'add' ? line.oldNum : ''}
                       </span>
                       {/* New line number */}
-                      <span className={`w-20 text-right pr-2 py-0.5 select-none border-r border-gray-800 ${
-                        line.type === 'add' ? 'bg-green-900/30 text-green-400/50' :
-                        line.type === 'del' ? 'bg-red-900/30 text-gray-600' :
-                        'text-gray-600'
+                      <span className={`w-20 text-right pr-2 py-0.5 select-none border-r border-gray-200 dark:border-gray-800 ${
+                        line.type === 'add' ? 'bg-green-200 dark:bg-green-900/30 text-green-600 dark:text-green-400/50' :
+                        line.type === 'del' ? 'bg-red-200 dark:bg-red-900/30 text-gray-500' :
+                        'text-gray-500'
                       }`}>
                         {line.type !== 'del' ? line.newNum : ''}
                       </span>
                       {/* Change indicator */}
                       <span className={`w-6 text-center py-0.5 select-none ${
-                        line.type === 'add' ? 'bg-green-900/40 text-green-400' :
-                        line.type === 'del' ? 'bg-red-900/40 text-red-400' : ''
+                        line.type === 'add' ? 'bg-green-300 dark:bg-green-900/40 text-green-700 dark:text-green-400' :
+                        line.type === 'del' ? 'bg-red-300 dark:bg-red-900/40 text-red-700 dark:text-red-400' : ''
                       }`}>
                         {line.type === 'add' ? '+' : line.type === 'del' ? '-' : ''}
                       </span>
                       {/* Content */}
                       <span className={`flex-1 py-0.5 px-2 whitespace-pre ${
-                        line.type === 'add' ? 'text-green-300' :
-                        line.type === 'del' ? 'text-red-300' :
-                        'text-gray-300'
+                        line.type === 'add' ? 'text-green-800 dark:text-green-300' :
+                        line.type === 'del' ? 'text-red-800 dark:text-red-300' :
+                        'text-gray-800 dark:text-gray-300'
                       }`}>
                         {line.content || ' '}
                       </span>
@@ -251,7 +256,7 @@ export function SimpleDiffViewer({ diff }: { diff: string }) {
   const lines = diff.split('\n')
 
   return (
-    <div className="h-full overflow-auto bg-gray-950">
+    <div className="h-full overflow-auto bg-gray-50 dark:bg-gray-950">
       <table className="w-full text-xs font-mono border-collapse">
         <tbody>
           {lines.map((line, i) => {
@@ -264,13 +269,13 @@ export function SimpleDiffViewer({ diff }: { diff: string }) {
               <tr
                 key={i}
                 className={
-                  isAdd ? 'bg-green-900/30' :
-                  isDel ? 'bg-red-900/30' :
-                  isChunk ? 'bg-blue-900/30' :
-                  isHeader ? 'bg-gray-800' : ''
+                  isAdd ? 'bg-green-100 dark:bg-green-900/30' :
+                  isDel ? 'bg-red-100 dark:bg-red-900/30' :
+                  isChunk ? 'bg-blue-100 dark:bg-blue-900/30' :
+                  isHeader ? 'bg-gray-200 dark:bg-gray-800' : ''
                 }
               >
-                <td className="w-12 text-right pr-2 py-0.5 text-gray-600 select-none border-r border-gray-800">
+                <td className="w-12 text-right pr-2 py-0.5 text-gray-500 select-none border-r border-gray-200 dark:border-gray-800">
                   {i + 1}
                 </td>
                 <td className="w-6 text-center py-0.5 select-none">
@@ -278,11 +283,11 @@ export function SimpleDiffViewer({ diff }: { diff: string }) {
                   {isDel && <span className="text-red-400">-</span>}
                 </td>
                 <td className={`py-0.5 px-2 whitespace-pre ${
-                  isAdd ? 'text-green-300' :
-                  isDel ? 'text-red-300' :
-                  isChunk ? 'text-blue-300' :
-                  isHeader ? 'text-gray-500' :
-                  'text-gray-300'
+                  isAdd ? 'text-green-800 dark:text-green-300' :
+                  isDel ? 'text-red-800 dark:text-red-300' :
+                  isChunk ? 'text-blue-700 dark:text-blue-300' :
+                  isHeader ? 'text-gray-600 dark:text-gray-500' :
+                  'text-gray-800 dark:text-gray-300'
                 }`}>
                   {isAdd || isDel ? line.slice(1) : line}
                 </td>

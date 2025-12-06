@@ -812,16 +812,17 @@ ${lines.map(l => '+' + l).join('\n')}`
 
   // ========== 文件浏览 ==========
   async listFiles(filePath = '', ref = 'HEAD'): Promise<any[]> {
-    const { execSync } = await import('child_process')
+    const fs = await import('fs')
+    const pathModule = await import('path')
     try {
-      const treePath = filePath ? `${ref}:${filePath}` : ref
-      const output = execSync(`git ls-tree --name-only ${treePath}`, { cwd: this.baseDir, encoding: 'utf-8' })
-      const items = output.trim().split('\n').filter(Boolean)
+      const targetDir = pathModule.join(this.baseDir, filePath)
+      if (!fs.existsSync(targetDir)) return []
+      const entries = fs.readdirSync(targetDir, { withFileTypes: true })
       const result: any[] = []
-      for (const item of items) {
-        const fullPath = filePath ? `${filePath}/${item}` : item
-        const typeOutput = execSync(`git cat-file -t ${ref}:${fullPath}`, { cwd: this.baseDir, encoding: 'utf-8' }).trim()
-        result.push({ name: item, path: fullPath, type: typeOutput === 'tree' ? 'directory' : 'file' })
+      for (const entry of entries) {
+        if (entry.name === '.git' || entry.name === 'node_modules') continue
+        const fullPath = filePath ? `${filePath}/${entry.name}` : entry.name
+        result.push({ name: entry.name, path: fullPath, type: entry.isDirectory() ? 'directory' : 'file' })
       }
       return result.sort((a, b) => {
         if (a.type !== b.type) return a.type === 'directory' ? -1 : 1
@@ -831,9 +832,12 @@ ${lines.map(l => '+' + l).join('\n')}`
   }
 
   async getFileContent(filePath: string, ref = 'HEAD'): Promise<string> {
-    const { execSync } = await import('child_process')
+    const fs = await import('fs')
+    const pathModule = await import('path')
     try {
-      return execSync(`git show ${ref}:${filePath}`, { cwd: this.baseDir, encoding: 'utf-8', maxBuffer: 10 * 1024 * 1024 })
+      const fullPath = pathModule.join(this.baseDir, filePath)
+      if (fs.existsSync(fullPath)) return fs.readFileSync(fullPath, 'utf-8')
+      throw new Error('文件不存在')
     } catch (error: any) {
       throw new Error(`获取文件内容失败: ${error.message}`)
     }

@@ -59,10 +59,10 @@ export default function RemotesPage() {
   return (
     <div className="h-full flex flex-col overflow-hidden">
       {/* 顶部工具栏 */}
-      <div className="flex-shrink-0 border-b border-gray-700 bg-gray-800 px-4 py-3">
+      <div className="flex-shrink-0 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <h2 className="text-lg font-semibold text-white">远程仓库</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">远程仓库</h2>
             <span className="px-2 py-0.5 bg-purple-600 text-white text-xs rounded-full">
               {Object.keys(groupedRemotes).length} 个远程
             </span>
@@ -70,7 +70,7 @@ export default function RemotesPage() {
           <div className="flex items-center space-x-2">
             <button
               onClick={() => fetchRemotes()}
-              className="p-2 hover:bg-gray-700 rounded-md text-gray-400 hover:text-white transition-colors"
+              className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
               title="刷新"
             >
               <RefreshCw className="w-4 h-4" />
@@ -93,15 +93,15 @@ export default function RemotesPage() {
             {Object.values(groupedRemotes).map((remote) => (
               <div
                 key={remote.name}
-                className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden"
+                className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
               >
-                <div className="px-5 py-4 border-b border-gray-700 flex items-center justify-between">
+                <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="p-2 bg-purple-600/20 rounded-lg">
                       <Globe className="w-5 h-5 text-purple-400" />
                     </div>
                     <div>
-                      <h4 className="text-white font-semibold">{remote.name}</h4>
+                      <h4 className="text-gray-900 dark:text-white font-semibold">{remote.name}</h4>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -116,7 +116,7 @@ export default function RemotesPage() {
                     <button
                       onClick={() => handleRemove(remote.name)}
                       disabled={loading}
-                      className="p-1.5 hover:bg-gray-700 rounded text-gray-400 hover:text-red-400"
+                      className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-gray-500 dark:text-gray-400 hover:text-red-500"
                       title="移除"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -124,18 +124,18 @@ export default function RemotesPage() {
                   </div>
                 </div>
                 
-                <div className="divide-y divide-gray-700">
+                <div className="divide-y divide-gray-200 dark:divide-gray-700">
                   {remote.urls.fetch && (
                     <div className="px-5 py-3 flex items-center justify-between">
                       <div>
                         <span className="text-xs text-gray-500 uppercase">Fetch URL</span>
-                        <p className="text-sm text-gray-300 font-mono mt-0.5 truncate max-w-md">
+                        <p className="text-sm text-gray-600 dark:text-gray-300 font-mono mt-0.5 truncate max-w-md">
                           {remote.urls.fetch}
                         </p>
                       </div>
                       <button
                         onClick={() => handleCopyUrl(remote.urls.fetch!)}
-                        className="p-1.5 hover:bg-gray-700 rounded text-gray-400 hover:text-white"
+                        className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                         title="复制"
                       >
                         {copiedUrl === remote.urls.fetch ? (
@@ -150,13 +150,13 @@ export default function RemotesPage() {
                     <div className="px-5 py-3 flex items-center justify-between">
                       <div>
                         <span className="text-xs text-gray-500 uppercase">Push URL</span>
-                        <p className="text-sm text-gray-300 font-mono mt-0.5 truncate max-w-md">
+                        <p className="text-sm text-gray-600 dark:text-gray-300 font-mono mt-0.5 truncate max-w-md">
                           {remote.urls.push}
                         </p>
                       </div>
                       <button
                         onClick={() => handleCopyUrl(remote.urls.push!)}
-                        className="p-1.5 hover:bg-gray-700 rounded text-gray-400 hover:text-white"
+                        className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                         title="复制"
                       >
                         {copiedUrl === remote.urls.push ? (

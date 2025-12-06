@@ -408,6 +408,17 @@ export function createApiRoutes(gitService: GitService): Router {
     handleResponse(res, () => gitService.abortCherryPick(), 'Cherry-pick 已中止')
   })
 
+  // ========== Git Reflog ==========
+  router.get('/reflog', (req, res) => {
+    const limit = parseInt(req.query.limit as string) || 100
+    handleResponse(res, () => gitService.getReflog(limit))
+  })
+
+  router.post('/reflog/reset', (req, res) => {
+    const { ref, mode } = req.body
+    handleResponse(res, () => gitService.resetToReflog(ref, mode || 'mixed'), '已重置到指定位置')
+  })
+
   // ========== 仓库统计 ==========
   router.get('/stats/contributors', (req, res) => {
     handleResponse(res, () => gitService.getContributorStats())

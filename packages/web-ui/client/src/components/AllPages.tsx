@@ -344,32 +344,32 @@ export function SyncPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">同步</h2>
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">同步</h2>
 
       {status && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="font-semibold mb-4">当前状态</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+          <h3 className="font-semibold mb-4 text-gray-900 dark:text-white">当前状态</h3>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-gray-600">当前分支:</span>
-              <span className="font-medium">{status.current}</span>
+              <span className="text-gray-600 dark:text-gray-400">当前分支:</span>
+              <span className="font-medium text-gray-900 dark:text-white">{status.current}</span>
             </div>
             {status.tracking && (
               <>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">跟踪分支:</span>
-                  <span className="font-medium">{status.tracking}</span>
+                  <span className="text-gray-600 dark:text-gray-400">跟踪分支:</span>
+                  <span className="font-medium text-gray-900 dark:text-white">{status.tracking}</span>
                 </div>
                 {status.ahead > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600">领先:</span>
-                    <span className="font-medium text-green-600">{status.ahead} 个提交</span>
+                    <span className="text-gray-600 dark:text-gray-400">领先:</span>
+                    <span className="font-medium text-green-600 dark:text-green-400">{status.ahead} 个提交</span>
                   </div>
                 )}
                 {status.behind > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600">落后:</span>
-                    <span className="font-medium text-red-600">{status.behind} 个提交</span>
+                    <span className="text-gray-600 dark:text-gray-400">落后:</span>
+                    <span className="font-medium text-red-600 dark:text-red-400">{status.behind} 个提交</span>
                   </div>
                 )}
               </>
@@ -422,14 +422,14 @@ function ActionCard({ title, description, action, disabled, buttonText, secondar
   secondary?: { text: string; action: () => void }
 }) {
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="font-semibold mb-2">{title}</h3>
-      <p className="text-sm text-gray-600 mb-4">{description}</p>
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+      <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">{title}</h3>
+      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{description}</p>
       <div className="flex space-x-2">
         <button
           onClick={action}
           disabled={disabled}
-          className="px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 disabled:opacity-50"
+          className="px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded hover:bg-primary-hover disabled:opacity-50"
         >
           {buttonText}
         </button>
@@ -437,7 +437,7 @@ function ActionCard({ title, description, action, disabled, buttonText, secondar
           <button
             onClick={secondary.action}
             disabled={disabled}
-            className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 disabled:opacity-50"
+            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
           >
             {secondary.text}
           </button>
@@ -645,19 +645,19 @@ export function SubmodulesPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">子模块管理</h2>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">子模块管理</h2>
         <div className="flex space-x-2">
           <button
             onClick={() => fetchSubmodules()}
             disabled={actionLoading}
-            className="flex items-center space-x-2 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50"
+            className="flex items-center space-x-2 px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50"
           >
             <RefreshCw className={`w-4 h-4 ${actionLoading ? 'animate-spin' : ''}`} />
             <span>刷新</span>
           </button>
           <button
             onClick={() => setShowAdd(!showAdd)}
-            className="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+            className="flex items-center space-x-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg disabled:opacity-50"
           >
             <Plus className="w-4 h-4" />
             <span>添加子模块</span>
@@ -666,13 +666,13 @@ export function SubmodulesPage() {
       </div>
 
       {/* 批量操作 */}
-      <div className="bg-white rounded-lg shadow p-4">
-        <h3 className="font-semibold mb-3">批量操作</h3>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700">
+        <h3 className="font-semibold mb-3 text-gray-900 dark:text-white">批量操作</h3>
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => handleInit(true)}
             disabled={actionLoading}
-            className="flex items-center space-x-2 px-3 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 disabled:opacity-50"
+            className="flex items-center space-x-2 px-3 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded hover:bg-blue-200 dark:hover:bg-blue-900/50 disabled:opacity-50"
           >
             <Settings className="w-4 h-4" />
             <span>初始化全部</span>
@@ -680,7 +680,7 @@ export function SubmodulesPage() {
           <button
             onClick={() => handleUpdate(undefined, true)}
             disabled={actionLoading}
-            className="flex items-center space-x-2 px-3 py-2 bg-green-100 text-green-700 rounded hover:bg-green-200 disabled:opacity-50"
+            className="flex items-center space-x-2 px-3 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded hover:bg-green-200 dark:hover:bg-green-900/50 disabled:opacity-50"
           >
             <Download className="w-4 h-4" />
             <span>更新全部</span>
@@ -688,7 +688,7 @@ export function SubmodulesPage() {
           <button
             onClick={handleSync}
             disabled={actionLoading}
-            className="flex items-center space-x-2 px-3 py-2 bg-purple-100 text-purple-700 rounded hover:bg-purple-200 disabled:opacity-50"
+            className="flex items-center space-x-2 px-3 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded hover:bg-purple-200 dark:hover:bg-purple-900/50 disabled:opacity-50"
           >
             <RefreshCw className="w-4 h-4" />
             <span>同步 URL</span>
@@ -696,7 +696,7 @@ export function SubmodulesPage() {
           <button
             onClick={handlePullAll}
             disabled={actionLoading}
-            className="flex items-center space-x-2 px-3 py-2 bg-orange-100 text-orange-700 rounded hover:bg-orange-200 disabled:opacity-50"
+            className="flex items-center space-x-2 px-3 py-2 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 rounded hover:bg-orange-200 dark:hover:bg-orange-900/50 disabled:opacity-50"
           >
             <Upload className="w-4 h-4" />
             <span>拉取全部</span>
@@ -706,42 +706,42 @@ export function SubmodulesPage() {
 
       {/* 添加子模块表单 */}
       {showAdd && (
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="font-semibold mb-3">添加子模块</h3>
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+          <h3 className="font-semibold mb-3 text-gray-900 dark:text-white">添加子模块</h3>
           <div className="space-y-3">
             <input
               type="text"
               value={newSubmodule.url}
               onChange={(e) => setNewSubmodule({ ...newSubmodule, url: e.target.value })}
               placeholder="仓库 URL (例如: https://github.com/user/repo.git)"
-              className="w-full px-4 py-2 border rounded-lg"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:border-primary"
             />
             <input
               type="text"
               value={newSubmodule.path}
               onChange={(e) => setNewSubmodule({ ...newSubmodule, path: e.target.value })}
               placeholder="本地路径 (例如: libs/my-lib)"
-              className="w-full px-4 py-2 border rounded-lg"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:border-primary"
             />
             <input
               type="text"
               value={newSubmodule.branch}
               onChange={(e) => setNewSubmodule({ ...newSubmodule, branch: e.target.value })}
               placeholder="分支 (可选，默认为默认分支)"
-              className="w-full px-4 py-2 border rounded-lg"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:border-primary"
             />
           </div>
           <div className="mt-4 flex space-x-2">
             <button
               onClick={handleAdd}
               disabled={actionLoading}
-              className="px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 disabled:opacity-50"
+              className="px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg disabled:opacity-50"
             >
               添加
             </button>
             <button
               onClick={() => setShowAdd(false)}
-              className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600"
             >
               取消
             </button>
@@ -751,24 +751,24 @@ export function SubmodulesPage() {
 
       {/* 子模块列表 */}
       {submodules.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-12 text-center text-gray-500">
-          <FolderGit2 className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-12 text-center text-gray-500 border border-gray-200 dark:border-gray-700">
+          <FolderGit2 className="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
           <p>没有找到子模块</p>
           <p className="text-sm mt-2">点击"添加子模块"按钮来添加一个新的子模块</p>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow divide-y">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow divide-y divide-gray-200 dark:divide-gray-700 border border-gray-200 dark:border-gray-700">
           {submodules.map((sub) => (
-            <div key={sub.path} className="p-4 hover:bg-gray-50">
+            <div key={sub.path} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-750">
               <div className="flex items-start justify-between">
                 <div className="flex items-start space-x-3">
-                  <FolderGit2 className="w-5 h-5 mt-1 text-primary-600" />
+                  <FolderGit2 className="w-5 h-5 mt-1 text-primary" />
                   <div>
                     <div className="flex items-center space-x-2">
-                      <span className="font-medium">{sub.name}</span>
+                      <span className="font-medium text-gray-900 dark:text-white">{sub.name}</span>
                       {getStatusBadge(sub.status)}
                     </div>
-                    <div className="mt-1 text-sm text-gray-500">
+                    <div className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                       <div>路径: <span className="font-mono">{sub.path}</span></div>
                       <div className="truncate max-w-md">URL: <span className="font-mono text-xs">{sub.url}</span></div>
                       {sub.branch && <div>分支: <span className="font-mono">{sub.branch}</span></div>}
@@ -780,14 +780,14 @@ export function SubmodulesPage() {
                   <button
                     onClick={() => handleUpdate(sub.path)}
                     disabled={actionLoading}
-                    className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded hover:bg-green-200 disabled:opacity-50"
+                    className="px-3 py-1 text-sm bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded hover:bg-green-200 dark:hover:bg-green-900/50 disabled:opacity-50"
                   >
                     更新
                   </button>
                   <button
                     onClick={() => handleRemove(sub.path)}
                     disabled={actionLoading}
-                    className="px-3 py-1 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 disabled:opacity-50"
+                    className="px-3 py-1 text-sm bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded hover:bg-red-200 dark:hover:bg-red-900/50 disabled:opacity-50"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

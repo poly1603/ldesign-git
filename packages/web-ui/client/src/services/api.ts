@@ -125,6 +125,11 @@ export const gitApi = {
     api.post('/cherry-pick', { commits, noCommit }),
   abortCherryPick: () => api.post('/cherry-pick/abort'),
   
+  // Reflog
+  getReflog: (limit = 100) => api.get('/reflog', { params: { limit } }),
+  resetToReflog: (ref: string, mode: 'soft' | 'mixed' | 'hard' = 'mixed') =>
+    api.post('/reflog/reset', { ref, mode }),
+  
   // Stats
   getContributorStats: () => api.get('/stats/contributors'),
   getCommitActivity: (days = 30) => api.get('/stats/activity', { params: { days } }),
@@ -170,4 +175,15 @@ export const gitApi = {
   
   // Repository Info
   getRepoInfo: () => api.get('/repo/info'),
+  
+  // SSH Key Generation
+  generateSSHKey: (email: string, type: 'ed25519' | 'rsa' = 'ed25519') =>
+    api.post('/ssh/generate', { email, type }),
+  listSSHKeys: () => api.get('/ssh/keys'),
+  
+  // Git Credentials
+  getCredentials: () => api.get('/credentials'),
+  saveCredential: (credential: { provider: string; username: string; token: string }) =>
+    api.post('/credentials', credential),
+  deleteCredential: (id: string) => api.delete(`/credentials/${id}`),
 }

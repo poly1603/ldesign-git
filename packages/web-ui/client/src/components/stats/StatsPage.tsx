@@ -58,11 +58,11 @@ export default function StatsPage() {
   const maxWeekday = Math.max(...weekdayActivity, 1)
 
   const StatCard = ({ icon: Icon, label, value, color, subValue }: any) => (
-    <div className="bg-gray-800 rounded-xl p-5">
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-gray-400 text-sm">{label}</p>
-          <p className="text-2xl font-bold text-white mt-1">{value}</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">{label}</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{value}</p>
           {subValue && <p className="text-xs text-gray-500 mt-1">{subValue}</p>}
         </div>
         <div className={`p-3 rounded-xl ${color}`}>
@@ -74,22 +74,22 @@ export default function StatsPage() {
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center bg-gray-900">
+      <div className="h-full flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <RefreshCw className="w-8 h-8 animate-spin text-blue-500" />
       </div>
     )
   }
 
   return (
-    <div className="h-full overflow-auto bg-gray-900 p-6">
+    <div className="h-full overflow-auto bg-gray-50 dark:bg-gray-900 p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
-          <BarChart3 className="w-6 h-6 text-blue-400" />
-          <h1 className="text-xl font-bold text-white">仓库统计</h1>
+          <BarChart3 className="w-6 h-6 text-primary" />
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">仓库统计</h1>
         </div>
         <button
           onClick={fetchStats}
-          className="flex items-center space-x-2 px-3 py-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white transition-colors"
+          className="flex items-center space-x-2 px-3 py-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
         >
           <RefreshCw className="w-4 h-4" />
           <span className="text-sm">刷新</span>
@@ -108,11 +108,11 @@ export default function StatsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* 贡献者排行 */}
-        <div className="bg-gray-800 rounded-xl p-5">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
-              <Users className="w-5 h-5 text-purple-400" />
-              <h2 className="text-lg font-semibold text-white">贡献者排行</h2>
+              <Users className="w-5 h-5 text-purple-500" />
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">贡献者排行</h2>
             </div>
             <span className="text-xs text-gray-500">共 {contributors.length} 人</span>
           </div>
@@ -122,14 +122,14 @@ export default function StatsPage() {
                 <span className={`w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold ${
                   i === 0 ? 'bg-yellow-500 text-black' : 
                   i === 1 ? 'bg-gray-400 text-black' : 
-                  i === 2 ? 'bg-orange-600 text-white' : 'bg-gray-700 text-gray-400'
+                  i === 2 ? 'bg-orange-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
                 }`}>{i + 1}</span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-white truncate">{c.name}</span>
+                    <span className="text-sm text-gray-900 dark:text-white truncate">{c.name}</span>
                     <span className="text-xs text-gray-400 ml-2">{c.commits} ({((c.commits / totalCommits) * 100).toFixed(1)}%)</span>
                   </div>
-                  <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                  <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all"
                       style={{ width: `${(c.commits / maxCommits) * 100}%` }}
@@ -145,16 +145,16 @@ export default function StatsPage() {
         </div>
 
         {/* 提交活动 */}
-        <div className="bg-gray-800 rounded-xl p-5">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
-              <Calendar className="w-5 h-5 text-green-400" />
-              <h2 className="text-lg font-semibold text-white">提交活动</h2>
+              <Calendar className="w-5 h-5 text-green-500" />
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">提交活动</h2>
             </div>
             <select
               value={activityDays}
               onChange={(e) => setActivityDays(Number(e.target.value))}
-              className="px-2 py-1 bg-gray-700 border border-gray-600 rounded text-sm text-white"
+              className="px-2 py-1 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-sm text-gray-900 dark:text-white"
             >
               <option value={7}>近 7 天</option>
               <option value={14}>近 14 天</option>
@@ -186,16 +186,16 @@ export default function StatsPage() {
         </div>
 
         {/* 周活动分布 */}
-        <div className="bg-gray-800 rounded-xl p-5">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center space-x-2 mb-4">
-            <Clock className="w-5 h-5 text-orange-400" />
-            <h2 className="text-lg font-semibold text-white">按星期分布</h2>
+            <Clock className="w-5 h-5 text-orange-500" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">按星期分布</h2>
           </div>
           <div className="space-y-3">
             {weekdays.map((day, i) => (
               <div key={i} className="flex items-center space-x-3">
                 <span className="w-8 text-sm text-gray-400">{day}</span>
-                <div className="flex-1 h-6 bg-gray-700 rounded overflow-hidden">
+                <div className="flex-1 h-6 bg-gray-200 dark:bg-gray-700 rounded overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-orange-500 to-yellow-500 rounded transition-all flex items-center justify-end pr-2"
                     style={{ width: `${(weekdayActivity[i] / maxWeekday) * 100}%` }}
@@ -211,10 +211,10 @@ export default function StatsPage() {
         </div>
 
         {/* 代码语言/文件类型饼图 */}
-        <div className="bg-gray-800 rounded-xl p-5">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center space-x-2 mb-4">
-            <PieChart className="w-5 h-5 text-cyan-400" />
-            <h2 className="text-lg font-semibold text-white">文件类型分布</h2>
+            <PieChart className="w-5 h-5 text-cyan-500" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">文件类型分布</h2>
           </div>
           <div className="flex">
             {/* 简化饼图 */}
@@ -243,7 +243,7 @@ export default function StatsPage() {
                 })()}
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-lg font-bold text-white">{totalFiles}</span>
+                <span className="text-lg font-bold text-gray-900 dark:text-white">{totalFiles}</span>
               </div>
             </div>
             <div className="flex-1 space-y-1 max-h-32 overflow-auto">
@@ -252,7 +252,7 @@ export default function StatsPage() {
                 return (
                   <div key={i} className="flex items-center space-x-2 text-sm">
                     <div className={`w-3 h-3 rounded ${colors[i]}`} />
-                    <span className="text-white font-mono">{f.extension}</span>
+                    <span className="text-gray-900 dark:text-white font-mono">{f.extension}</span>
                     <span className="text-gray-500">({((f.count / totalFiles) * 100).toFixed(1)}%)</span>
                   </div>
                 )
@@ -262,38 +262,38 @@ export default function StatsPage() {
         </div>
 
         {/* 仓库状态 */}
-        <div className="bg-gray-800 rounded-xl p-5 lg:col-span-2">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-5 lg:col-span-2 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center space-x-2 mb-4">
-            <Database className="w-5 h-5 text-blue-400" />
-            <h2 className="text-lg font-semibold text-white">当前仓库状态</h2>
+            <Database className="w-5 h-5 text-primary" />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">当前仓库状态</h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-gray-700 rounded-lg p-4 text-center">
-              <p className="text-3xl font-bold text-white">{status?.modified?.length || 0}</p>
+            <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 text-center">
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{status?.modified?.length || 0}</p>
               <p className="text-sm text-yellow-400 mt-1">已修改</p>
             </div>
-            <div className="bg-gray-700 rounded-lg p-4 text-center">
-              <p className="text-3xl font-bold text-white">{status?.created?.length || 0}</p>
+            <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 text-center">
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{status?.created?.length || 0}</p>
               <p className="text-sm text-green-400 mt-1">新增</p>
             </div>
-            <div className="bg-gray-700 rounded-lg p-4 text-center">
-              <p className="text-3xl font-bold text-white">{status?.deleted?.length || 0}</p>
+            <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 text-center">
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{status?.deleted?.length || 0}</p>
               <p className="text-sm text-red-400 mt-1">删除</p>
             </div>
-            <div className="bg-gray-700 rounded-lg p-4 text-center">
-              <p className="text-3xl font-bold text-white">{status?.notAdded?.length || 0}</p>
+            <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 text-center">
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{status?.notAdded?.length || 0}</p>
               <p className="text-sm text-gray-400 mt-1">未跟踪</p>
             </div>
           </div>
           <div className="mt-4 flex items-center space-x-4 text-sm">
             <div className="flex items-center space-x-2">
-              <span className="text-gray-400">当前分支:</span>
-              <span className="text-white font-medium">{status?.current || '-'}</span>
+              <span className="text-gray-500 dark:text-gray-400">当前分支:</span>
+              <span className="text-gray-900 dark:text-white font-medium">{status?.current || '-'}</span>
             </div>
             {status?.tracking && (
               <div className="flex items-center space-x-2">
-                <span className="text-gray-400">跟踪:</span>
-                <span className="text-white">{status.tracking}</span>
+                <span className="text-gray-500 dark:text-gray-400">跟踪:</span>
+                <span className="text-gray-900 dark:text-white">{status.tracking}</span>
               </div>
             )}
             {(status?.ahead || status?.behind) && (

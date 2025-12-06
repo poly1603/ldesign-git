@@ -19,3 +19,214 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* 动画 */
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scale-in {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.2s ease-out;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.2s ease-out;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+/* 自定义滚动条 - 暗色模式 */
+.dark ::-webkit-scrollbar,
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track,
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* 自定义滚动条 - 浅色模式 */
+.light ::-webkit-scrollbar-thumb,
+html:not(.dark) ::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
+}
+
+.light ::-webkit-scrollbar-thumb:hover,
+html:not(.dark) ::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* 暗色主题（默认） */
+.dark {
+  color-scheme: dark;
+}
+
+/* 浅色主题 */
+.light {
+  color-scheme: light;
+}
+
+.light body {
+  @apply bg-gray-50 text-gray-900;
+}
+
+/* 悬停效果增强 */
+.hover-lift {
+  @apply transition-transform duration-200;
+}
+
+.hover-lift:hover {
+  @apply -translate-y-0.5;
+}
+
+/* 焦点环 */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900;
+}
+
+/* 渐变背景 */
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* 玻璃效果 */
+.glass {
+  @apply bg-gray-800/80 backdrop-blur-md;
+}
+
+/* 隐藏滚动条但保持可滚动 */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* 文字截断 */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 灰色 750 - Tailwind 扩展 */
+.bg-gray-750 {
+  background-color: rgb(38, 43, 54);
+}
+
+.hover\:bg-gray-750:hover {
+  background-color: rgb(38, 43, 54);
+}
+
+/* 主题色类 - 使用 CSS 变量 */
+.bg-primary {
+  background-color: var(--color-primary, #3b82f6);
+}
+
+.bg-primary-hover:hover {
+  background-color: var(--color-primary-hover, #2563eb);
+}
+
+.text-primary {
+  color: var(--color-primary, #3b82f6);
+}
+
+.border-primary {
+  border-color: var(--color-primary, #3b82f6);
+}
+
+.ring-primary {
+  --tw-ring-color: var(--color-primary, #3b82f6);
+}
+
+/* 侧边栏选中项使用主题色 */
+.sidebar-active {
+  background-color: var(--color-primary, #3b82f6);
+  color: white;
+}
+
+/* 主按钮使用主题色 */
+.btn-primary {
+  background-color: var(--color-primary, #3b82f6);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover, #2563eb);
+}

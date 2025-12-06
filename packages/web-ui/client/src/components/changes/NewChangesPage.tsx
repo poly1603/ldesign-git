@@ -137,14 +137,18 @@ export default function NewChangesPage() {
       setShowDiff(null)
       return
     }
+    setShowDiff(path) // 先设置选中状态
+    setDiffContent('') // 清空之前的内容
     try {
       const response = await gitApi.getFileDiff(path)
       if (response.data?.success) {
         setDiffContent(response.data.data || '无差异')
-        setShowDiff(path)
+      } else {
+        setDiffContent(`获取差异失败: ${response.data?.error || '未知错误'}`)
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('获取差异失败:', error)
+      setDiffContent(`获取差异失败: ${error.message || '网络错误'}`)
     }
   }
 
@@ -222,18 +226,18 @@ export default function NewChangesPage() {
   return (
     <div className="h-full flex flex-col overflow-hidden">
       {/* 顶部工具栏 */}
-      <div className="flex-shrink-0 border-b border-gray-700 bg-gray-800 px-4 py-3">
+      <div className="flex-shrink-0 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <h2 className="text-lg font-semibold text-white">变更</h2>
-            <span className="px-2 py-0.5 bg-blue-600 text-white text-xs rounded-full">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">变更</h2>
+            <span className="px-2 py-0.5 bg-primary text-white text-xs rounded-full">
               {allChanges.length} 个文件
             </span>
           </div>
           <div className="flex items-center space-x-2">
             <button
               onClick={() => fetchStatus()}
-              className="p-2 hover:bg-gray-700 rounded-md text-gray-400 hover:text-white transition-colors"
+              className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
               title="刷新"
             >
               <RefreshCw className="w-4 h-4" />
@@ -249,25 +253,25 @@ export default function NewChangesPage() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="搜索文件..."
-            className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+            className="w-full pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-primary"
           />
         </div>
       </div>
 
       <div className="flex-1 flex overflow-hidden">
         {/* 左侧文件列表 */}
-        <div className="w-80 flex-shrink-0 border-r border-gray-700 flex flex-col overflow-hidden">
+        <div className="w-80 flex-shrink-0 border-r border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden bg-white dark:bg-gray-900">
           {/* 批量操作 */}
           {allChanges.length > 0 && (
-            <div className="flex-shrink-0 px-4 py-2 bg-gray-850 border-b border-gray-700 flex items-center justify-between">
+            <div className="flex-shrink-0 px-4 py-2 bg-gray-50 dark:bg-gray-850 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
               <button
                 onClick={handleSelectAll}
                 className="flex items-center space-x-2 text-sm text-gray-400 hover:text-white"
               >
                 {selectedFiles.size === allChanges.length ? (
-                  <CheckSquare className="w-4 h-4 text-blue-400" />
+                  <CheckSquare className="w-4 h-4 text-primary" />
                 ) : selectedFiles.size > 0 ? (
-                  <MinusSquare className="w-4 h-4 text-blue-400" />
+                  <MinusSquare className="w-4 h-4 text-primary" />
                 ) : (
                   <Square className="w-4 h-4" />
                 )}
@@ -303,7 +307,7 @@ export default function NewChangesPage() {
                   {/* 文件夹头 */}
                   <button
                     onClick={() => toggleFolder(folder)}
-                    className="w-full px-4 py-2 flex items-center space-x-2 text-gray-400 hover:bg-gray-800 text-sm"
+                    className="w-full px-4 py-2 flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm"
                   >
                     {expandedFolders.has(folder) ? (
                       <ChevronDown className="w-4 h-4" />
@@ -321,8 +325,8 @@ export default function NewChangesPage() {
                       {files.map((file) => (
                         <div
                           key={file.path}
-                          className={`group flex items-center px-4 py-2 hover:bg-gray-800 cursor-pointer ${
-                            showDiff === file.path ? 'bg-gray-800' : ''
+                          className={`group flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer ${
+                            showDiff === file.path ? 'bg-gray-100 dark:bg-gray-800' : ''
                           }`}
                         >
                           <button
@@ -330,7 +334,7 @@ export default function NewChangesPage() {
                             className="mr-3"
                           >
                             {selectedFiles.has(file.path) ? (
-                              <CheckSquare className="w-4 h-4 text-blue-400" />
+                              <CheckSquare className="w-4 h-4 text-primary" />
                             ) : (
                               <Square className="w-4 h-4 text-gray-600 group-hover:text-gray-400" />
                             )}
@@ -342,7 +346,7 @@ export default function NewChangesPage() {
                           
                           <button
                             onClick={() => handleViewDiff(file.path)}
-                            className="flex-1 text-left truncate text-sm text-gray-300 hover:text-white"
+                            className="flex-1 text-left truncate text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                           >
                             {file.path.split('/').pop()}
                           </button>
@@ -350,7 +354,7 @@ export default function NewChangesPage() {
                           <div className="opacity-0 group-hover:opacity-100 flex items-center space-x-1 transition-opacity">
                             <button
                               onClick={() => handleViewDiff(file.path)}
-                              className="p-1 hover:bg-gray-700 rounded text-gray-400 hover:text-white"
+                              className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                               title="查看差异"
                             >
                               <Eye className="w-4 h-4" />
@@ -359,7 +363,7 @@ export default function NewChangesPage() {
                               onClick={async () => {
                                 await addFiles([file.path])
                               }}
-                              className="p-1 hover:bg-gray-700 rounded text-gray-400 hover:text-green-400"
+                              className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-gray-500 dark:text-gray-400 hover:text-green-500"
                               title="暂存"
                             >
                               <Plus className="w-4 h-4" />
@@ -370,7 +374,7 @@ export default function NewChangesPage() {
                                   await discardChanges([file.path])
                                 }
                               }}
-                              className="p-1 hover:bg-gray-700 rounded text-gray-400 hover:text-red-400"
+                              className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-gray-500 dark:text-gray-400 hover:text-red-500"
                               title="丢弃更改"
                             >
                               <RotateCcw className="w-4 h-4" />
@@ -396,8 +400,8 @@ export default function NewChangesPage() {
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Diff 预览 */}
           <div className="flex-1 overflow-hidden flex flex-col">
-            <div className="px-4 py-2 border-b border-gray-700 bg-gray-800">
-              <h3 className="text-sm font-medium text-gray-300">
+            <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">
                 {showDiff ? `差异: ${showDiff}` : '选择文件查看差异'}
               </h3>
             </div>
@@ -405,7 +409,7 @@ export default function NewChangesPage() {
               {showDiff ? (
                 <DiffViewer diff={diffContent} fileName={showDiff} />
               ) : (
-                <div className="flex flex-col items-center justify-center h-full text-gray-600 bg-gray-950">
+                <div className="flex flex-col items-center justify-center h-full text-gray-500 bg-gray-50 dark:bg-gray-950">
                   <FileText className="w-12 h-12 mb-4 opacity-50" />
                   <p>点击文件名查看差异</p>
                 </div>
@@ -414,11 +418,11 @@ export default function NewChangesPage() {
           </div>
 
           {/* 提交面板 */}
-          <div className="flex-shrink-0 border-t border-gray-700 bg-gray-800 p-4">
+          <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center space-x-2">
                 <GitCommit className="w-5 h-5 text-gray-400" />
-                <span className="text-sm font-medium text-white">提交更改</span>
+                <span className="text-sm font-medium text-gray-900 dark:text-white">提交更改</span>
               </div>
               <button
                 onClick={handleAIGenerateCommitMessage}
@@ -438,7 +442,7 @@ export default function NewChangesPage() {
               value={commitMessage}
               onChange={(e) => setCommitMessage(e.target.value)}
               placeholder="输入提交信息，或点击 AI 生成按钮自动生成..."
-              className="w-full h-20 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 resize-none focus:outline-none focus:border-blue-500"
+              className="w-full h-20 px-3 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 resize-none focus:outline-none focus:border-primary"
             />
             <div className="flex items-center justify-between mt-3">
               <span className="text-xs text-gray-500">
@@ -451,7 +455,7 @@ export default function NewChangesPage() {
                   <button
                     onClick={handleCommit}
                     disabled={!commitMessage.trim() || loading}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
+                    className="px-4 py-2 bg-primary hover:bg-primary-hover disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
                   >
                     <Send className="w-4 h-4" />
                     <span>提交选中</span>
@@ -460,7 +464,7 @@ export default function NewChangesPage() {
                   <button
                     onClick={handleQuickCommit}
                     disabled={!commitMessage.trim() || allChanges.length === 0 || loading}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
+                    className="px-4 py-2 bg-primary hover:bg-primary-hover disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
                   >
                     <Send className="w-4 h-4" />
                     <span>提交全部</span>

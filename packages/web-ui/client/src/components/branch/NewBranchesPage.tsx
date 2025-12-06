@@ -65,19 +65,19 @@ export default function NewBranchesPage() {
   return (
     <div className="h-full flex flex-col overflow-hidden">
       {/* 顶部工具栏 */}
-      <div className="flex-shrink-0 border-b border-gray-700 bg-gray-800 px-4 py-3">
+      <div className="flex-shrink-0 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <h2 className="text-lg font-semibold text-white">分支管理</h2>
-            <div className="flex items-center space-x-1 bg-gray-700 rounded-lg p-1">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">分支管理</h2>
+            <div className="flex items-center space-x-1 bg-gray-200 dark:bg-gray-700 rounded-lg p-1">
               {(['all', 'local', 'remote'] as const).map((f) => (
                 <button
                   key={f}
                   onClick={() => setFilter(f)}
                   className={`px-3 py-1 text-xs rounded-md transition-colors ${
                     filter === f
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-400 hover:text-white'
+                      ? 'bg-primary text-white'
+                      : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                   }`}
                 >
                   {f === 'all' ? '全部' : f === 'local' ? '本地' : '远程'}
@@ -88,14 +88,14 @@ export default function NewBranchesPage() {
           <div className="flex items-center space-x-2">
             <button
               onClick={() => fetchBranches()}
-              className="p-2 hover:bg-gray-700 rounded-md text-gray-400 hover:text-white transition-colors"
+              className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
               title="刷新"
             >
               <RefreshCw className="w-4 h-4" />
             </button>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="flex items-center space-x-2 px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm transition-colors"
+              className="flex items-center space-x-2 px-3 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg text-sm transition-colors"
             >
               <Plus className="w-4 h-4" />
               <span>新建分支</span>
@@ -111,7 +111,7 @@ export default function NewBranchesPage() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="搜索分支..."
-            className="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+            className="w-full pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-primary"
           />
         </div>
       </div>
@@ -122,16 +122,16 @@ export default function NewBranchesPage() {
         {currentBranch && (
           <div className="mb-6">
             <h3 className="text-xs uppercase text-gray-500 font-semibold mb-2 px-2">当前分支</h3>
-            <div className="bg-green-900/20 border border-green-700/50 rounded-lg p-4">
+            <div className="bg-green-100 dark:bg-green-900/20 border border-green-300 dark:border-green-700/50 rounded-lg p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-green-600 rounded-lg">
                     <GitBranch className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h4 className="text-white font-semibold">{currentBranch.name}</h4>
+                    <h4 className="text-gray-900 dark:text-white font-semibold">{currentBranch.name}</h4>
                     <div className="flex items-center space-x-3 mt-1 text-xs text-gray-400">
-                      <code className="px-1.5 py-0.5 bg-gray-800 rounded">
+                      <code className="px-1.5 py-0.5 bg-gray-200 dark:bg-gray-800 rounded">
                         {currentBranch.commit.substring(0, 7)}
                       </code>
                       {status?.tracking && (
@@ -240,12 +240,12 @@ function BranchItem({
   const [showMenu, setShowMenu] = useState(false)
 
   return (
-    <div className="group flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-800 transition-colors">
-      <GitBranch className={`w-4 h-4 mr-3 ${isRemote ? 'text-purple-400' : 'text-blue-400'}`} />
+    <div className="group flex items-center px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+      <GitBranch className={`w-4 h-4 mr-3 ${isRemote ? 'text-purple-400' : 'text-primary'}`} />
       
       <div className="flex-1 min-w-0">
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-white truncate">{branch.name}</span>
+          <span className="text-sm text-gray-900 dark:text-white truncate">{branch.name}</span>
           {isRemote && (
             <span className="px-1.5 py-0.5 bg-purple-900/50 text-purple-400 text-xs rounded">
               远程
@@ -261,7 +261,7 @@ function BranchItem({
         {onCheckout && (
           <button
             onClick={onCheckout}
-            className="p-1.5 hover:bg-gray-700 rounded text-gray-400 hover:text-green-400"
+            className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-gray-500 dark:text-gray-400 hover:text-green-500"
             title="切换到此分支"
           >
             <Check className="w-4 h-4" />
@@ -270,7 +270,7 @@ function BranchItem({
         {onMerge && !isRemote && (
           <button
             onClick={onMerge}
-            className="p-1.5 hover:bg-gray-700 rounded text-gray-400 hover:text-blue-400"
+            className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-gray-500 dark:text-gray-400 hover:text-primary"
             title={`合并到 ${currentBranchName}`}
           >
             <GitMerge className="w-4 h-4" />
@@ -279,7 +279,7 @@ function BranchItem({
         {onDelete && !isRemote && (
           <button
             onClick={onDelete}
-            className="p-1.5 hover:bg-gray-700 rounded text-gray-400 hover:text-red-400"
+            className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-gray-500 dark:text-gray-400 hover:text-red-500"
             title="删除分支"
           >
             <Trash2 className="w-4 h-4" />
@@ -326,9 +326,9 @@ function CreateBranchModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative w-full max-w-md bg-gray-800 rounded-xl shadow-2xl border border-gray-700">
-        <div className="px-6 py-4 border-b border-gray-700 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-white">新建分支</h3>
+      <div className="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">新建分支</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-white">
             <X className="w-5 h-5" />
           </button>
@@ -336,23 +336,23 @@ function CreateBranchModal({
         
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm text-gray-400 mb-1">分支名称</label>
+            <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">分支名称</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="feature/new-feature"
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-primary"
               autoFocus
             />
           </div>
           
           <div>
-            <label className="block text-sm text-gray-400 mb-1">基于分支</label>
+            <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">基于分支</label>
             <select
               value={startPoint}
               onChange={(e) => setStartPoint(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:border-primary"
             >
               {branches.map((b) => (
                 <option key={b.name} value={b.name}>
@@ -379,7 +379,7 @@ function CreateBranchModal({
             <button
               type="submit"
               disabled={!name.trim() || loading}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+              className="px-4 py-2 bg-primary hover:bg-primary-hover disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
             >
               {loading ? '创建中...' : '创建分支'}
             </button>
