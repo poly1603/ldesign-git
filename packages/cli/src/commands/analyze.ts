@@ -22,7 +22,7 @@ export function createAnalyzeCommand(): Command {
         const analyzer = new CommitAnalyzer()
         const maxCount = parseInt(options.number)
 
-        let analytics
+        let analytics: any
         if (options.author) {
           const stats = await analyzer.analyzeByAuthor(options.author, maxCount)
           spinner.succeed('提交分析完成')

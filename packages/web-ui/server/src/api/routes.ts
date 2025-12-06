@@ -521,15 +521,194 @@ export function createApiRoutes(gitService: GitService): Router {
     handleResponse(res, () => gitService.listFiles(path as string || '', ref as string || 'HEAD'))
   })
 
-  router.get('/browse/content', (req, res) => {
-    const { path, ref } = req.query
-    handleResponse(res, () => gitService.getFileContent(path as string || '', ref as string || 'HEAD'))
-  })
+router.get('/browse/content', (req, res) => {
+  const { path, ref } = req.query
+  handleResponse(res, () => gitService.getFileContent(path as string || '', ref as string || 'HEAD'))
+})
 
-  // ========== 仓库信息 ==========
-  router.get('/repo/info', (req, res) => {
-    handleResponse(res, () => gitService.getRepoInfo())
-  })
+// ========== 仓库信息 ==========
+router.get('/repo/info', (req, res) => {
+  handleResponse(res, () => gitService.getRepoInfo())
+})
 
-  return router
+// ========== Doctor (健康检查) ==========
+router.get('/doctor', (req, res) => {
+  handleResponse(res, () => gitService.runDiagnosis())
+})
+
+router.get('/doctor/quick', (req, res) => {
+  handleResponse(res, () => gitService.runQuickCheck())
+})
+
+// ========== Undo (撤销操作) ==========
+router.get('/undo/state', (req, res) => {
+  handleResponse(res, () => gitService.analyzeUndoState())
+})
+
+router.post('/undo/unstage', (req, res) => {
+  const { files } = req.body
+  handleResponse(res, () => gitService.unstageFiles(files), '已取消暂存')
+})
+
+router.post('/undo/discard', (req, res) => {
+  const { files } = req.body
+  handleResponse(res, () => gitService.discardFileChanges(files), '更改已丢弃')
+})
+
+router.post('/undo/reset', (req, res) => {
+  const { mode, target } = req.body
+  handleResponse(res, () => gitService.undoReset(mode, target), '重置成功')
+})
+
+router.post('/undo/abort-merge', (req, res) => {
+  handleResponse(res, () => gitService.abortMerge(), '合并已中止')
+})
+
+router.post('/undo/abort-rebase', (req, res) => {
+  handleResponse(res, () => gitService.abortRebase(), '变基已中止')
+})
+
+// ========== Alias (别名管理) ==========
+router.get('/alias', (req, res) => {
+  const { scope } = req.query
+  handleResponse(res, () => gitService.getAliases(scope as string))
+})
+
+router.post('/alias', (req, res) => {
+  const { name, command, global } = req.body
+  handleResponse(res, () => gitService.addAlias(name, command, global), '别名已添加')
+})
+
+router.delete('/alias/:name', (req, res) => {
+  const { name } = req.params
+  const { global } = req.query
+  handleResponse(res, () => gitService.removeAlias(name, global === 'true'), '别名已删除')
+})
+
+router.get('/alias/templates', (req, res) => {
+  handleResponse(res, () => gitService.getAliasTemplates())
+})
+
+router.post('/alias/template/:name', (req, res) => {
+  const { name } = req.params
+  const { global } = req.body
+  handleResponse(res, () => gitService.applyAliasTemplate(name, global), '模板已应用')
+})
+
+// ========== Archive (归档) ==========
+router.post('/archive', (req, res) => {
+  const { ref, format, output, prefix } = req.body
+  handleResponse(res, () => gitService.createArchive(ref, { format, output, prefix }), '归档创建成功')
+})
+
+router.get('/archive/refs', (req, res) => {
+  handleResponse(res, () => gitService.getArchiveRefs())
+})
+
+router.get('/archive/preview/:ref', (req, res) => {
+  const { ref } = req.params
+  handleResponse(res, () => gitService.previewArchive(ref))
+})
+
+// ========== Patch (补丁管理) ==========
+router.post('/patch/create', (req, res) => {
+  const { range, output } = req.body
+  handleResponse(res, () => gitService.createPatch(range, output), '补丁已创建')
+})
+
+router.post('/patch/apply', (req, res) => {
+  const { file, threeWay } = req.body
+  handleResponse(res, () => gitService.applyPatch(file, threeWay), '补丁已应用')
+})
+
+router.post('/patch/check', (req, res) => {
+  const { file } = req.body
+  handleResponse(res, () => gitService.checkPatch(file))
+})
+
+router.get('/patch/list', (req, res) => {
+  const { dir } = req.query
+  handleResponse(res, () => gitService.listPatches(dir as string))
+})
+
+// ========== Backup (备份管理) ==========
+router.post('/backup/create', (req, res) => {
+  const { output, type } = req.body
+  handleResponse(res, () => gitService.createBackup(output, type), '备份已创建')
+})
+
+router.post('/backup/restore', (req, res) => {
+  const { bundle, target } = req.body
+  handleResponse(res, () => gitService.restoreBackup(bundle, target), '恢复成功')
+})
+
+router.get('/backup/list', (req, res) => {
+  const { dir } = req.query
+  handleResponse(res, () => gitService.listBackups(dir as string))
+})
+
+router.post('/backup/verify', (req, res) => {
+  const { bundle } = req.body
+  handleResponse(res, () => gitService.verifyBackup(bundle))
+})
+
+// ========== Scan (安全扫描) ==========
+router.get('/scan', (req, res) => {
+  const { history } = req.query
+  handleResponse(res, () => gitService.runScan(history === 'true'))
+})
+
+router.get('/scan/secrets', (req, res) => {
+  const { history } = req.query
+  handleResponse(res, () => gitService.scanSecrets(history === 'true'))
+})
+
+router.get('/scan/large-files', (req, res) => {
+  handleResponse(res, () => gitService.scanLargeFiles())
+})
+
+router.get('/scan/staged', (req, res) => {
+  handleResponse(res, () => gitService.scanStagedFiles())
+})
+
+// ========== Cleanup (清理) ==========
+router.get('/cleanup/preview', (req, res) => {
+  handleResponse(res, () => gitService.previewCleanup())
+})
+
+router.post('/cleanup/branches', (req, res) => {
+  const { merged, stale, dryRun } = req.body
+  handleResponse(res, () => gitService.cleanupBranches({ merged, stale, dryRun }), '分支清理完成')
+})
+
+router.post('/cleanup/gc', (req, res) => {
+  const { aggressive } = req.body
+  handleResponse(res, () => gitService.runGC(aggressive), '垃圾回收完成')
+})
+
+router.post('/cleanup/stash', (req, res) => {
+  const { keep } = req.body
+  handleResponse(res, () => gitService.cleanupStash(keep), 'Stash 清理完成')
+})
+
+router.post('/cleanup/remote', (req, res) => {
+  const { remote } = req.body
+  handleResponse(res, () => gitService.pruneRemoteBranches(remote), '远程分支已清理')
+})
+
+// ========== Stats (增强统计) ==========
+router.get('/stats/summary', (req, res) => {
+  handleResponse(res, () => gitService.getRepoSummary())
+})
+
+router.get('/stats/timeline', (req, res) => {
+  const { since } = req.query
+  handleResponse(res, () => gitService.getTimeline(since as string))
+})
+
+router.get('/stats/lines', (req, res) => {
+  handleResponse(res, () => gitService.getLineStats())
+})
+
+return router
 }

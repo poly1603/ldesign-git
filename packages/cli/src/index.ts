@@ -24,6 +24,19 @@ import { createBisectCommand } from './commands/bisect'
 import { createBlameCommand } from './commands/blame'
 import { createReflogCommand } from './commands/reflog'
 import { createNotesCommand } from './commands/notes'
+// 新增命令
+import { createDoctorCommand } from './commands/doctor'
+import { createUndoCommand } from './commands/undo'
+import { createAliasCommand } from './commands/alias'
+import { createCherryPickCommand } from './commands/cherry-pick'
+import { createArchiveCommand } from './commands/archive'
+import { createPatchCommand } from './commands/patch'
+import { createBackupCommand } from './commands/backup'
+import { createScanCommand } from './commands/scan'
+import { createCredentialCommand } from './commands/credential'
+import { createCleanupCommand } from './commands/cleanup'
+import { createCompletionCommand } from './commands/completion'
+import { createStatsCommand } from './commands/stats'
 import * as display from './utils/display'
 
 const program = new Command()
@@ -31,7 +44,7 @@ const program = new Command()
 program
   .name('ldesign-git')
   .description('LDesign Git 工具 - 功能强大的 Git 操作插件')
-  .version('0.4.0')
+  .version('0.5.0')
 
 // 基础命令
 program
@@ -372,6 +385,19 @@ program.addCommand(createBisectCommand())
 program.addCommand(createBlameCommand())
 program.addCommand(createReflogCommand())
 program.addCommand(createNotesCommand())
+// 新增命令
+program.addCommand(createDoctorCommand())
+program.addCommand(createUndoCommand())
+program.addCommand(createAliasCommand())
+program.addCommand(createCherryPickCommand())
+program.addCommand(createArchiveCommand())
+program.addCommand(createPatchCommand())
+program.addCommand(createBackupCommand())
+program.addCommand(createScanCommand())
+program.addCommand(createCredentialCommand())
+program.addCommand(createCleanupCommand())
+program.addCommand(createCompletionCommand())
+program.addCommand(createStatsCommand())
 
 // 错误处理
 program.exitOverride()

@@ -21,6 +21,10 @@ import CodeSearchPage from './components/search/CodeSearchPage'
 import FileBrowserPage from './components/browser/FileBrowserPage'
 import BranchGraphPage from './components/graph/BranchGraphPage'
 import ReflogPage from './components/reflog/ReflogPage'
+import DoctorPage from './components/doctor/DoctorPage'
+import CleanupPage from './components/cleanup/CleanupPage'
+import ScanPage from './components/scan/ScanPage'
+import ToolsPage from './components/tools/ToolsPage'
 
 function App() {
   const { initWebSocket, cleanupWebSocket, fetchAll } = useGitStore()
@@ -58,6 +62,10 @@ function App() {
               <Route path="browser" element={<FileBrowserPage />} />
               <Route path="graph" element={<BranchGraphPage />} />
               <Route path="reflog" element={<ReflogPage />} />
+              <Route path="doctor" element={<DoctorPage />} />
+              <Route path="cleanup" element={<CleanupPage />} />
+              <Route path="scan" element={<ScanPage />} />
+              <Route path="tools" element={<ToolsPage />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>
           </Routes>

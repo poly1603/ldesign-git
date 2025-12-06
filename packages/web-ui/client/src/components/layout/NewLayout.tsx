@@ -6,7 +6,8 @@ import {
   Plus, Download, Upload, RotateCcw, Search, Bell, Terminal,
   Loader2, CheckCircle2, XCircle, AlertTriangle, Zap,
   GitMerge, GitPullRequest, Clock, Eye, FolderTree, Folder,
-  BarChart3, FileCode, GitCompare, Code, Network, Keyboard, History
+  BarChart3, FileCode, GitCompare, Code, Network, Keyboard, History,
+  Stethoscope, Trash2, Shield, Wrench
 } from 'lucide-react'
 import { useGitStore } from '../../store/gitStore'
 import { useToast } from '../common/Toast'
@@ -83,6 +84,10 @@ export default function NewLayout() {
     { path: '/stats', icon: BarChart3, label: '统计' },
     { path: '/hooks', icon: FileCode, label: 'Hooks' },
     { path: '/reflog', icon: History, label: 'Reflog' },
+    { path: '/doctor', icon: Stethoscope, label: '健康检查' },
+    { path: '/cleanup', icon: Trash2, label: '清理' },
+    { path: '/scan', icon: Shield, label: '安全扫描' },
+    { path: '/tools', icon: Wrench, label: '工具' },
   ]
 
   const quickActions = [
@@ -308,7 +313,7 @@ export default function NewLayout() {
               <span>处理中...</span>
             </div>
           )}
-          <span className="text-white/80">LDesign Git v0.4.0</span>
+          <span className="text-white/80">LDesign Git v0.5.0</span>
         </div>
       </footer>
 

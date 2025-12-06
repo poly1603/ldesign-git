@@ -186,4 +186,62 @@ export const gitApi = {
   saveCredential: (credential: { provider: string; username: string; token: string }) =>
     api.post('/credentials', credential),
   deleteCredential: (id: string) => api.delete(`/credentials/${id}`),
+
+  // ========== Doctor (健康检查) ==========
+  runDiagnosis: () => api.get('/doctor'),
+  runQuickCheck: () => api.get('/doctor/quick'),
+
+  // ========== Undo (撤销操作) ==========
+  analyzeUndoState: () => api.get('/undo/state'),
+  unstageFiles: (files?: string[]) => api.post('/undo/unstage', { files }),
+  discardFileChanges: (files?: string[]) => api.post('/undo/discard', { files }),
+  undoReset: (mode: string, target: string) => api.post('/undo/reset', { mode, target }),
+  abortRebase: () => api.post('/undo/abort-rebase'),
+
+  // ========== Alias (别名管理) ==========
+  getAliases: (scope?: string) => api.get('/alias', { params: { scope } }),
+  addAlias: (name: string, command: string, global = false) => 
+    api.post('/alias', { name, command, global }),
+  removeAlias: (name: string, global = false) => 
+    api.delete(`/alias/${name}`, { params: { global } }),
+  getAliasTemplates: () => api.get('/alias/templates'),
+  applyAliasTemplate: (name: string, global = false) => 
+    api.post(`/alias/template/${name}`, { global }),
+
+  // ========== Archive (归档) ==========
+  createArchive: (ref: string, options?: { format?: string; output?: string; prefix?: string }) =>
+    api.post('/archive', { ref, ...options }),
+  getArchiveRefs: () => api.get('/archive/refs'),
+  previewArchive: (ref: string) => api.get(`/archive/preview/${ref}`),
+
+  // ========== Patch (补丁管理) ==========
+  createPatch: (range: string, output?: string) => api.post('/patch/create', { range, output }),
+  applyPatch: (file: string, threeWay = false) => api.post('/patch/apply', { file, threeWay }),
+  checkPatch: (file: string) => api.post('/patch/check', { file }),
+  listPatches: (dir?: string) => api.get('/patch/list', { params: { dir } }),
+
+  // ========== Backup (备份管理) ==========
+  createBackup: (output?: string, type = 'bundle') => api.post('/backup/create', { output, type }),
+  restoreBackup: (bundle: string, target: string) => api.post('/backup/restore', { bundle, target }),
+  listBackups: (dir?: string) => api.get('/backup/list', { params: { dir } }),
+  verifyBackup: (bundle: string) => api.post('/backup/verify', { bundle }),
+
+  // ========== Scan (安全扫描) ==========
+  runScan: (history = false) => api.get('/scan', { params: { history } }),
+  scanSecrets: (history = false) => api.get('/scan/secrets', { params: { history } }),
+  scanLargeFiles: () => api.get('/scan/large-files'),
+  scanStagedFiles: () => api.get('/scan/staged'),
+
+  // ========== Cleanup (清理) ==========
+  previewCleanup: () => api.get('/cleanup/preview'),
+  cleanupBranches: (options: { merged?: boolean; stale?: boolean; dryRun?: boolean }) =>
+    api.post('/cleanup/branches', options),
+  runGC: (aggressive = false) => api.post('/cleanup/gc', { aggressive }),
+  cleanupStash: (keep = 10) => api.post('/cleanup/stash', { keep }),
+  pruneRemoteBranches: (remote = 'origin') => api.post('/cleanup/remote', { remote }),
+
+  // ========== Stats (增强统计) ==========
+  getRepoSummary: () => api.get('/stats/summary'),
+  getTimeline: (since?: string) => api.get('/stats/timeline', { params: { since } }),
+  getLineStats: () => api.get('/stats/lines'),
 }
