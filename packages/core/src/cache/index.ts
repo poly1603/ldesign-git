@@ -3,6 +3,14 @@
  * @module cache
  */
 
+// 导出持久化缓存
+export {
+  PersistentCache,
+  createPersistentCache,
+  type PersistentCacheConfig,
+  type CacheStats
+} from './persistent-cache'
+
 /**
  * 缓存条目接口
  */

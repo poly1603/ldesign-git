@@ -47,4 +47,15 @@ export { CompletionManager } from './completion-manager'
 export { CleanupManager } from './cleanup-manager'
 export type { CleanupResult, BranchCleanupOptions } from './cleanup-manager'
 
+// 操作队列
+export {
+  OperationQueue,
+  createOperationQueue,
+  OperationPriority,
+  type QueuedOperation,
+  type QueuedOperationStatus,
+  type OperationQueueConfig,
+  type QueueStats,
+  type AddOperationOptions
+} from './operation-queue'
 

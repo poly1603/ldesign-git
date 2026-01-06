@@ -135,22 +135,119 @@ pnpm test:core
 - 📄 多格式报告生成
 
 ### 最新功能（v0.5.0）
+
+#### 🆕 新增功能
+- ⚡ **操作队列** - 支持并发控制、优先级排序、自动重试
+- 💾 **持久化缓存** - 基于文件系统的缓存持久化
+- 🛡️ **错误码枚举** - 统一的错误码和错误消息
+- 📝 **类型工具** - DeepPartial、DeepReadonly 等完整类型工具
+- ✅ **统一验证器** - GitValidator 支持批量验证
+- 🔒 **增强错误处理** - 错误链、重试配置、丰富的错误类型
+
+#### 🛠️ 现有功能
 - ⚡ 性能监控器
 - 🔒 LFS 管理器
 - 📦 Monorepo 管理器
 - 🕐 Reflog 管理器
-- 🩺 **Git 健康检查** - 全面诊断 Git 配置和仓库状态
-- ↩️ **智能撤销向导** - 交互式撤销操作助手
-- 🏷️ **别名管理器** - 管理 Git 命令别名和模板
-- 🍒 **Cherry-pick 管理** - 增强的提交挑选功能
-- 📦 **归档管理器** - 创建各种格式的归档文件
-- 🩹 **补丁管理器** - 创建和应用 Git 补丁
-- 💾 **备份管理器** - 仓库备份和恢复
-- 🔍 **安全扫描器** - 扫描敏感信息和大文件
-- 🔐 **凭证管理器** - 管理 Git 认证凭证
-- 🧹 **清理工具** - 清理分支、stash 和垃圾回收
-- 📊 **增强统计** - 更详细的仓库统计和分析
-- 🐚 **Shell 补全** - 支持 Bash、Zsh、Fish、PowerShell
+- 🩺 Git 健康检查
+- ↩️ 智能撤销向导
+- 🏷️ 别名管理器
+- 🍒 Cherry-pick 管理
+- 📦 归档管理器
+- 🩹 补丁管理器
+- 💾 备份管理器
+- 🔍 安全扫描器
+- 🔐 凭证管理器
+- 🧹 清理工具
+- 📊 增强统计
+- 🐚 Shell 补全
+
+## 📝 使用示例
+
+### 基础 Git 操作
+
+```ts
+import { GitManager } from '@ldesign/git-core'
+
+const git = new GitManager({ baseDir: './my-project' })
+
+// 获取状态
+const status = await git.status()
+console.log(`当前分支: ${status.current}`)
+console.log(`修改的文件: ${status.modified.length}`)
+
+// 提交更改
+await git.add('.')
+await git.commit('feat: add new feature')
+await git.push()
+```
+
+### 操作队列
+
+```ts
+import { OperationQueue, OperationPriority } from '@ldesign/git-core'
+
+const queue = new OperationQueue({ concurrency: 3 })
+
+// 添加操作
+const result = await queue.add(
+  () => git.push(),
+  { name: 'push', priority: OperationPriority.HIGH }
+)
+
+// 批量添加
+const results = await queue.addBatch([
+  { execute: () => git.fetch('origin'), name: 'fetch' },
+  { execute: () => git.pull(), name: 'pull' }
+])
+```
+
+### 持久化缓存
+
+```ts
+import { PersistentCache } from '@ldesign/git-core'
+
+const cache = new PersistentCache<string, object>({
+  cacheName: 'git-cache',
+  defaultTTL: 1000 * 60 * 60, // 1 小时
+  autoSave: true
+})
+
+cache.set('key', { data: 'value' })
+const value = cache.get('key')
+```
+
+### 统一验证
+
+```ts
+import { GitValidator } from '@ldesign/git-core'
+
+const validator = new GitValidator({ strict: true })
+
+// 验证分支名
+const branchResult = validator.validateBranchName('feature/login')
+console.log(branchResult.valid) // true
+
+// 验证提交信息
+const commitResult = validator.validateCommitMessage('feat(user): add login')
+console.log(commitResult.parsed?.type) // 'feat'
+```
+
+### 错误处理
+
+```ts
+import { GitError, GitErrorCode, isGitError } from '@ldesign/git-core'
+
+try {
+  await git.push()
+} catch (error) {
+  if (isGitError(error)) {
+    console.log('错误码:', error.code)
+    console.log('可重试:', error.isRetryable)
+    console.log('错误链:', error.getErrorChain())
+  }
+}
+```
 
 ## 📖 文档
 

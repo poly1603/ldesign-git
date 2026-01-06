@@ -1,6 +1,6 @@
 {
   "name": "@ldesign/git-core",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "LDesign Git 核心功能库 - 提供完整的 Git 操作 API",
   "keywords": [
     "git",

@@ -748,4 +748,6 @@ export interface BatchOperationConfig {
   continueOnError?: boolean
 }
 
+// 导出类型工具
+export * from './utilities'
 
